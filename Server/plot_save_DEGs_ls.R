@@ -351,6 +351,7 @@ output$downloadbuttonLS <- renderUI({
                                                            filtered.tbl_LS,
                                                            name = paste(input$selectSpecies_LS,
                                                                         "RNA-seq Differential Gene Expression"),
+                                                           filename_prefix = 'DGETable_',
                                                            expressionnotes = expressionnotes,
                                                            multiplecorrection = multiplecorrection,
                                                            filteredacross = filteredacross,
@@ -358,7 +359,7 @@ output$downloadbuttonLS <- renderUI({
                                                            proportionexport = proportionexport)
   
   downloadButton("generate_excel_report_LS",
-                 "Download .XLSX",
+                 "Download DGE Tables",
                  class = "btn-primary")
   
 })

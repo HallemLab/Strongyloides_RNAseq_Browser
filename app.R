@@ -17,7 +17,6 @@ suppressPackageStartupMessages({
     library(plotly)
     library(magrittr)
     library(ggthemes)
-    library(shinycssloaders)
     library(gplots)
     library(svglite)
     library(Cairo)

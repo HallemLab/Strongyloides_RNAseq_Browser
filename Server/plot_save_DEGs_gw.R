@@ -384,6 +384,7 @@ output$downloadbuttonGW <- renderUI({
                                                              downloadablel.tbl_GW,
                                                              name = paste(input$selectSpecies_GW,
                                                                           "RNA-seq Differential Gene Expression"),
+                                                             filename_prefix = 'DGETable_',
                                                              expressionnotes = expressionnotes,
                                                              multiplecorrection = multiplecorrection,
                                                              filteredacross = filteredacross,
@@ -391,6 +392,6 @@ output$downloadbuttonGW <- renderUI({
                                                              proportionexport = proportionexport)
     
     downloadButton("generate_excel_report_GW",
-                   "Download DEG Tables",
+                   "Download DGE Tables",
                    class = "btn-primary")
 })

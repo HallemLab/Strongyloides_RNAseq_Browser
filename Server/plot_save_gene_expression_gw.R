@@ -434,7 +434,14 @@ observe({
 output$downloadGenePlot <- downloadHandler(
   
   filename = function(){
-    paste('GeneExpression_',input$displayedGene, '_',Sys.Date(),'.pdf', sep='')
+    if (input$displayedGene == "All Genes" | input$displayedGene == "Data Table") {
+      type <- 'GeneExpression_'
+    } else {
+    type <- switch(input$genePlotTab,
+           `Strongyloides Homologs` = "HomologExpression_",
+          `Selected Gene` = 'GeneExpression_'
+           )}
+    paste(type,input$displayedGene, '_',Sys.Date(),'.pdf', sep='')
   },
   content = function(file){
     withProgress ({

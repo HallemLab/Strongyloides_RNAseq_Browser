@@ -78,7 +78,7 @@ output$GSEAPlot_LS <- renderPlot({
 ## LS: Save GSEA Plot ----
 output$downloadGSEAPlot_LS <- downloadHandler(
     filename = function(){
-        paste('GSEAplot_',vals$comparison_LS[vals$displayedComparison_LS], '_',Sys.Date(),'.pdf', sep='')
+        paste('GSEAPlot_',vals$comparison_LS[vals$displayedComparison_LS], '_',Sys.Date(),'.pdf', sep='')
     },
     content = function(file){
         gseaplot<- perform_GSEA_LS()
@@ -148,7 +148,6 @@ output$GSEATbl_LS <- renderDT({
 output$downloadGSEAtbl_LS <- renderUI({
     req(input$goLS)
     req(vals$myGSEA.df)
-    
     myGSEA.tbl<-vals$myGSEA.df %>%
         dplyr::select(!c(Description, pvalue, enrichmentScore,life_stage)) %>%
         dplyr::arrange(desc(NES)) %>%
@@ -156,9 +155,13 @@ output$downloadGSEAtbl_LS <- renderUI({
     
     output$generate_GSEA_report_LS <- generate_excel_report(vals$comparison_LS[vals$displayedComparison_LS], 
                                                             myGSEA.tbl,
-                                                            name = "GSEA Analysis",
-                                                            filename_prefix = "GSEA_Table_",
-                                                            subtitle_prefix = "Gene Set Enrichment Analysis:")
+                                                            name = "Gene Set Enrichment Analysis",
+                                                            filename_prefix = paste('GSEATable_',
+                                                                                    vals$comparison_LS[vals$displayedComparison_LS],
+                                                                                    '_', 
+                                                                                    sep=''),
+                                                            
+                                                            n_header_rows = 5)
     downloadButton("generate_GSEA_report_LS",
                    "Download GSEA Table",
                    class = "btn-primary")
