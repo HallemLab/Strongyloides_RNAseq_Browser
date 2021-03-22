@@ -31,7 +31,7 @@ User interface files for the Shiny app. Includes custom css and additional READM
 Static files that can be interactively downloaded within the *Strongyloides* RNA-seq Browser environment.
 
 ## App Setup & Deployment
-To access a stable deployment of the *Strongyloides* RNA-seq Browser Web App, please visit:   [hallemlab.shinyapps.io/strongyloides_rnaseq_browser/](hallemlab.shinyapps.io/strongyloides_rnaseq_browser/)  
+To access a stable deployment of the *Strongyloides* RNA-seq Browser Web App, please visit:   [hallemlab.shinyapps.io/strongyloides_rnaseq_browser/](https://hallemlab.shinyapps.io/Strongyloides_RNAseq_Browser/)  
 
 
 To run the latest version locally from GitHub, use the following command in R/RStudio:  
