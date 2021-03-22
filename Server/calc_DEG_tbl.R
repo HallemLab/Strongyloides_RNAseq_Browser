@@ -11,6 +11,7 @@ calc_DEG_tbl <- function (ebFit, coef) {
         dplyr::relocate(UniProtKB, Description, InterPro, GO_term,
                         In.subclade_geneID, In.subclade_percent_homology,
                         Out.subclade_geneID, Out.subclade_percent_homology,
+                        Out2.subclade_geneID, Out2.subclade_percent_homology,
                         Ce_geneID, Ce_percent_homology, .after = LogOdds) %>%
         dplyr::relocate(ends_with("WBgeneID"), .before = In.subclade_geneID)
     

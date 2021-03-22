@@ -88,8 +88,7 @@ output$downloadVolcanoLS <- renderUI({
                width = 11, 
                height = 8, 
                units = "in", 
-               device = "pdf", 
-               useDingbats=FALSE)
+               device = cairo_pdf)
       },
       message = "Saving Plot")
     }
@@ -226,13 +225,15 @@ assemble_DEGs_LS <- reactive({
                                  
                   )) 
   LS.datatable <- LS.datatable %>%
-    DT::formatRound(columns=c(3:n_num_cols), 
+    DT::formatRound(columns=c(3:(n_num_cols-3),
+                                 n_num_cols), 
                     digits=3)
   
   LS.datatable <- LS.datatable %>%
     DT::formatRound(columns=c(n_num_cols+2, 
                               index_homologs+1,
-                              index_homologs+3), 
+                              index_homologs+3,
+                              index_homologs+5), 
                     digits=2)
   
   LS.datatable <- LS.datatable %>%
@@ -326,7 +327,7 @@ output$downloadbuttonLS <- renderUI({
   req(input$goLS,vals$comparison_LS)
   filtered.tbl_LS <- filter_DEG_tbl_LS()
   
-  expressionnotes <- "Columns labeled with <life stage - sample ID> report log2 counts per million (CPM) expression. Columns labeled avg_<life stage> are mean log2CPM. The column labeled logFC reports log2 fold change."
+  expressionnotes <- "Columns labeled with <life stage - sample ID> report log2 counts per million (CPM) expression. Columns labeled avg_<life stage> are median log2CPM with IQR. The column labeled logFC reports log2 fold change."
   ### Generate some text that describes the analysis conditions
   ### 1. If p-values are adjusted for multiple pairwise comparisons, which comparisons are included in the adjustment parameters? This should be the list of selected contrasts
   if (vals$multipleCorrection_LS == TRUE){
@@ -350,6 +351,7 @@ output$downloadbuttonLS <- renderUI({
                                                            filtered.tbl_LS,
                                                            name = paste(input$selectSpecies_LS,
                                                                         "RNA-seq Differential Gene Expression"),
+                                                           filename_prefix = 'DGETable_',
                                                            expressionnotes = expressionnotes,
                                                            multiplecorrection = multiplecorrection,
                                                            filteredacross = filteredacross,
@@ -357,7 +359,7 @@ output$downloadbuttonLS <- renderUI({
                                                            proportionexport = proportionexport)
   
   downloadButton("generate_excel_report_LS",
-                 "Download .XLSX",
+                 "Download DGE Tables",
                  class = "btn-primary")
   
 })

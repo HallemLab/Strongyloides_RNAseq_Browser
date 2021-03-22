@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
     library(htmltools)
     library(shinythemes)
     library(DT)
+    library(Cairo)
     library(tidyverse)
     library(ggforce)
     library(limma)
@@ -16,12 +17,12 @@ suppressPackageStartupMessages({
     library(plotly)
     library(magrittr)
     library(ggthemes)
-    library(shinycssloaders)
     library(gplots)
     library(svglite)
     library(Cairo)
     library(heatmaply)
     library(RColorBrewer)
+    library(rcartocolor)
     library(openxlsx)
     library(egg)
     library(dendextend)
@@ -33,6 +34,7 @@ suppressPackageStartupMessages({
     source("Server/theme_Publication.R")
     source('Server/limma_ranking.R')
     source("Server/generate_excel_report.R")
+    source("Server/navbarPageWithText.R")
 })
 
 # ---- Background ----
@@ -55,6 +57,7 @@ ui <- fluidPage(
 
 # ---- Server  ----
 server <- function(input, output, session) {
+    
     vals<-reactiveValues()
     
     ## Initialize Species ----

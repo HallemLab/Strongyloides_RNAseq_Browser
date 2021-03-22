@@ -81,13 +81,22 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
         groupAvgs <- diffGenes.df %>%
             dplyr::select(geneID, starts_with(paste0(tS,"-")), 
                           starts_with(paste0(cS,"-"))) %>%
-            pivot_longer(cols = -geneID, names_to = c("group","sample"), values_to = "CPM",
+            pivot_longer(cols = -geneID, 
+                         names_to = c("group","sample"),
+                         values_to = "CPM",
                          names_sep = "-") %>%
-            dplyr::mutate(contrastID = if_else(group %in% tS,"target", "contrast")) %>%
+            dplyr::mutate(contrastID = if_else(group %in% tS,
+                                               "target", 
+                                               "contrast")) %>%
             group_by(geneID, contrastID) %>%
             dplyr::select(-sample) %>%
-            summarize(mean = mean(CPM), .groups = "drop_last") %>%
-            pivot_wider(names_from = contrastID, values_from = mean) %>%
+            dplyr::summarise(avg = round(median(CPM),2), 
+                             low_hinge = round(fivenum(CPM)[2],2), 
+                             up_hinge = round(fivenum(CPM)[4],2), 
+                             .groups = "drop_last") %>%
+            tidyr::unite("IQR", low_hinge, up_hinge, sep = " to ") %>%
+            tidyr::unite("output", avg, IQR, sep = ", IQR = ") %>%
+            pivot_wider(names_from = contrastID, values_from = output) %>%
             dplyr::relocate(contrast, .after = target) %>%
             dplyr::rename_with(concat_name, -geneID) %>%
             dplyr::rename_with(.cols =-geneID, .fn = ~ paste0("avg_(",.x,")"))

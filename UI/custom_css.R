@@ -16,6 +16,9 @@ tags$head(
     padding: 10px 15px;
     }
     
+    .navbar-text {
+    float: right;
+    }
     
     h4 {
     font-size: 15px;

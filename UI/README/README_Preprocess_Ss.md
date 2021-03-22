@@ -20,11 +20,11 @@ ParaSite BioMaRT. Annotation information includes:
 [Hunt *et al* 2016](https://www.nature.com/articles/ng.3495) establishes
 two distinct subclades from the four sequenced *Strongyloides* species:
 *S. venezuelensis-S. papillosus* and *S. ratti-S. stercoralis*. Thus, we
-also include annotation information for the appropriate in-group and a
-reference member of the out-group, here:
+also include annotation information for the appropriate in-group and both
+members of the out-group, here:
 
 -   In-group: *S. ratti* homologs/percent homology
--   Out-group: *S. papillosus* homologs/percent homology
+-   Out-group: *S. papillosus* and *S. venezuelensis* homologs/percent homology
 
 ### Filtering and Normalization Steps
 

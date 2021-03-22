@@ -1,11 +1,12 @@
 
 
 # Header ----
-navbarPage(h3(em("Strongyloides"), "RNA-seq Browser"),
+navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            windowTitle = "Str-RNA-seq Browser",
            theme = shinytheme("flatly"), 
-           collapsible = TRUE,
+           collapsible = F,
            id = "tab",
+           text = "v1.1.0",
            
            # Gene Browser Tab ----
            tabPanel(h4("Browse By Gene"),
@@ -152,7 +153,7 @@ navbarPage(h3(em("Strongyloides"), "RNA-seq Browser"),
                                                     )
                                    )
                             )
-                        ) 
+                        )
                     )
            ),
            
@@ -280,9 +281,7 @@ navbarPage(h3(em("Strongyloides"), "RNA-seq Browser"),
                                                         heading = tagList(h5(shiny::icon("fas fa-braille"),
                                                                              "Gene Set Enrichment Analysis: Plot")),
                                                         status = "primary",
-                                                        withSpinner(plotOutput('GSEAPlot_LS'),
-                                                                    color = "#2C3E50",
-                                                                    type = 7),
+                                                        plotOutput('GSEAPlot_LS'),
                                                         downloadButton("downloadGSEAPlot_LS",
                                                                        "Download Plot as PDF",
                                                                        class = "btn-primary")
@@ -422,7 +421,7 @@ navbarPage(h3(em("Strongyloides"), "RNA-seq Browser"),
                                )
                         ),
                         column(6,
-                               # App Credits ----
+                               ### App Credits ----
                                panel( heading =  tagList(h5(shiny::icon("fas fa-drafting-compass"),
                                                             "Authors")),
                                       status = "primary",
@@ -443,6 +442,7 @@ navbarPage(h3(em("Strongyloides"), "RNA-seq Browser"),
                                )
                         )
                     )
+                    
            )
            
 )

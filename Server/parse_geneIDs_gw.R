@@ -47,7 +47,7 @@ parse_ids <- eventReactive(input$goGW,{
         if (isTruthy(input$idtext)){
             terms <- input$idtext %>%
                 gsub("\\n",",",.) %>% #replace any new lines with commas
-                gsub("\\s+","", .) %>% #remove any number of whitespace
+                trimWhiteSpace %>% #remove leading and trailing white psace from string
                 str_split(pattern = ",|;") %>%
                 unlist()
         } else if (isTruthy(input$loadfile)){

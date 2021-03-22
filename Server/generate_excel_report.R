@@ -6,7 +6,8 @@ generate_excel_report <- function(comparison, tbl,
                                   multiplecorrection = "",
                                   filteredacross = "",
                                   DEGpattern = "",
-                                  proportionexport = ""){
+                                  proportionexport = "",
+                                  n_header_rows = 10){
   
   temp <- downloadHandler(
     
@@ -38,21 +39,21 @@ generate_excel_report <- function(comparison, tbl,
             x = c(
               name,
               paste(subtitle_prefix, comparison[[y]]),
+              paste0("Report generated on ", format(Sys.Date(), "%B %d, %Y")),
               expressionnotes,
               multiplecorrection,
               DEGpattern,
               proportionexport,
-              filteredacross,
-              paste0("Report generated on ", format(Sys.Date(), "%B %d, %Y"))
+              filteredacross
             )
           )
-          
+        
           ## Write Data to Sheet
           writeData(
             to_download,
             sheet = y,
             x = tbl[[y]],
-            startRow = 9,
+            startRow = n_header_rows,
             startCol = 1,
             headerStyle = createStyle(
               textDecoration = "Bold",
