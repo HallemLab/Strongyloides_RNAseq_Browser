@@ -1,5 +1,6 @@
 # Strongyloides_RNAseq_Browser 
-Web-based Shiny App for browsing and on-demand analysis of *Strongyloides spp* RNA-seq datasets 
+Web-based Shiny App for browsing and on-demand analysis of *Strongyloides spp* RNA-seq datasets.  
+For more information, [please see the G3 paper associated with this project](https://pubmed.ncbi.nlm.nih.gov/33823530/).
 
 ## Table of Contents  
 1. [General Information](#general-information)
@@ -30,7 +31,7 @@ User interface files for the Shiny app. Includes custom css and additional READM
 Static files that can be interactively downloaded within the *Strongyloides* RNA-seq Browser environment.
 
 ## App Setup & Deployment
-To access a stable deployment of the *Strongyloides* RNA-seq Browser Web App, please visit:   [hallemlab.shinyapps.io/strongyloides_rnaseq_browser/](hallemlab.shinyapps.io/strongyloides_rnaseq_browser/)  
+To access a stable deployment of the *Strongyloides* RNA-seq Browser Web App, please visit:   [hallemlab.shinyapps.io/strongyloides_rnaseq_browser/](https://hallemlab.shinyapps.io/Strongyloides_RNAseq_Browser/)  
 
 
 To run the latest version locally from GitHub, use the following command in R/RStudio:  

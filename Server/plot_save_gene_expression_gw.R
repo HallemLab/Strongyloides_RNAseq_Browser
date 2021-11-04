@@ -413,7 +413,7 @@ observe({
                                    type = "pills",
                                    tabPanel("Selected Gene", 
                                             plotOutput('CPM')),
-                                   tabPanel("Strongyloides Homologs", 
+                                   tabPanel(p(em("Strongyloides"), "Homologs"), 
                                             plotOutput('CPM.homologs'),
                                             em('Note: homologous genes are identified based on WormBase ParaSite annotations and may not be accurate.'))
                        )
