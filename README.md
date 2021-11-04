@@ -85,6 +85,7 @@ Features of the app include:
 * [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html) - Gene set enrichment analysis
 * *Strongyloides* RNA-seq datasets:
   - [Stolzfus *et al* 2012](https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0001854)
+  - [Gonzalez Akimori *et al* 2021](https://www.nature.com/articles/s41598-021-87478-3)
   - [Hunt *et al* 2016](https://www.nature.com/articles/ng.3495)
   - [Hunt *et al* 2018](https://www.nature.com/articles/s41598-018-23514-z)
 * [WormBase ParaSite](https://parasite.wormbase.org/index.html) - Gene annotations and reference transcriptomes
@@ -97,3 +98,6 @@ This project is licensed under the MIT License.
 * [Astra Bryant, PhD](https://github.com/astrasb)
 * [Stephanie DeMarco, PhD](https://github.com/sfdemarco)
 * [Elissa Hallem, PhD](https://github.com/ehallem)
+
+## Update Notes
+Updated by A.S.B. on approximately 11-3-21 to include *S. stercoralis* free-living male RNA-seq data published by Gonzalez Akimori *et al* 2021. 
