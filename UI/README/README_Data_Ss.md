@@ -1,6 +1,6 @@
 ### Source
 
-The *S. stercoralis* datasets included in the *Strongyloides* RNA-seq Browser were originaly
+The *S. stercoralis* datasets included in the *Strongyloides* RNA-seq Browser were originally
 published by [Stolzfus *et al* 2012](https://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0001854) and [Gonzalez Akimori *et al* 2021](https://www.nature.com/articles/s41598-021-87478-3).
 Raw reads were downloaded from the European Nucleotide Archive - study
 accession numbers
