@@ -6,7 +6,7 @@ navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            theme = shinytheme("flatly"), 
            collapsible = F,
            id = "tab",
-           text = "v1.1.0",
+           text = "v2.0.0",
            
            # Gene Browser Tab ----
            tabPanel(h4("Browse By Gene"),
@@ -429,7 +429,16 @@ navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                         tags$a(
                                             href = "https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en", 
                                             'Astra S. Bryant, PhD',target="blank"),'with assistance from Stephanie DeMarco, PhD for the ',
-                                        tags$a(href="http://www.hallemlab.com/",'Hallem Lab',target="blank"), 'at UCLA.', 
+                                        tags$a(href="http://www.hallemlab.com/",'Hallem Lab',target="blank"), 'at UCLA.',
+                                        tags$br(),
+                                        'Thanks to Damia Gonzalez Akimori for suggesting the addition of', 
+                                       tags$em('S. stercoralis') ,'free-living male data.', 
+                                        
+                                        tags$br(),
+                                        tags$br(),
+                                        'For additional information regarding the browser, please see the associated publication: ',
+                                        tags$a(
+                                            href = 'https://academic.oup.com/g3journal/article/11/5/jkab104/6212650', 'Bryant, DeMarco, and Hallem 2021 [G3]',target="blank"),
                                         tags$br(),
                                         tags$br(),
                                         'The source code for the app is available on GitHub:', 
