@@ -619,7 +619,7 @@ output$downloadbuttonsGenes <- renderUI({
                    class = "btn-primary"),
     
     downloadButton("heatmap_data_download",
-                   "Download Data",
+                   "Download Data as Excel",
                    class = "btn-primary")
   )
   
