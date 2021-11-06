@@ -1,10 +1,10 @@
 ### Kallisto Alignment and Gene Annotation
 
 Kallisto was used to perform ultra-fast read mapping of raw reads to the
-*S. ratti* reference transcriptome (PRJEB125.WBPS14.mRNA\_transcripts,
+*S. ratti* reference transcriptome (PRJEB125.WBPS16.mRNA\_transcripts,
 downloaded from [WormBase
 ParaSite](https://parasite.wormbase.org/Strongyloides_ratti_prjeb125/Info/Index)
-on 17 August 2020). Kallisto alignments are imported into the R
+on 06 Nov 2021). Kallisto alignments are imported into the R
 environment using `Tximport`. Counts are generated from abundance files
 using the `lengthScaledTPM` option.  
 

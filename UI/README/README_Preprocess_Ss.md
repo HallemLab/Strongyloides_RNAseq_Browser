@@ -2,9 +2,9 @@
 
 Kallisto was used to perform ultra-fast read mapping of raw reads to the
 *S. stercoralis* reference transcriptome
-(PRJEB528.WBPS14.mRNA\_transcripts, downloaded from [WormBase
+(PRJEB528.WBPS16.mRNA\_transcripts, downloaded from [WormBase
 ParaSite](https://parasite.wormbase.org/Strongyloides_stercoralis_prjeb528/Info/Index/)
-on 16 June 2020). Kallisto alignments are imported into the R
+on 06 Nov 2021). Kallisto alignments are imported into the R
 environment using `Tximport`. Counts are generated from abundance files
 using the `lengthScaledTPM` option.   
 
