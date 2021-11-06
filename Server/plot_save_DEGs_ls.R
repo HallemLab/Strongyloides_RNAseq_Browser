@@ -359,7 +359,7 @@ output$downloadbuttonLS <- renderUI({
                                                            proportionexport = proportionexport)
   
   downloadButton("generate_excel_report_LS",
-                 "Download DGE Tables",
+                 "Download DGE Tables as Excel",
                  class = "btn-primary")
   
 })

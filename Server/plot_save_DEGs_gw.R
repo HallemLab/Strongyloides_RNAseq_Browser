@@ -392,6 +392,6 @@ output$downloadbuttonGW <- renderUI({
                                                              proportionexport = proportionexport)
     
     downloadButton("generate_excel_report_GW",
-                   "Download DGE Tables",
+                   "Download DGE Tables as Excel",
                    class = "btn-primary")
 })
