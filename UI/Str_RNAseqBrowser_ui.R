@@ -304,12 +304,20 @@ navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            tabPanel(h4("About"),
                     value = "about",
                     fluidRow(
-                        column(12,
+                        column(8,
                                panel(heading =  tagList(h5(shiny::icon("fas fa-question-circle"),
                                                            "App Overview and Features")),
                                      status = "primary",
                                      id = "About_Overview",
                                      includeMarkdown('UI/README/README_Features.md')
+                               )
+                        ), 
+                        column(4,
+                               panel(heading =  tagList(h5(shiny::icon("fas fa-sync-alt"),
+                                                           "Release Notes")),
+                                     status = "primary",
+                                     id = "About_Updates",
+                                     includeMarkdown('UI/README/README_Updates.md')
                                )
                         )
                     ),
@@ -430,10 +438,6 @@ navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                             href = "https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en", 
                                             'Astra S. Bryant, PhD',target="blank"),'with assistance from Stephanie DeMarco, PhD for the ',
                                         tags$a(href="http://www.hallemlab.com/",'Hallem Lab',target="blank"), 'at UCLA.',
-                                        tags$br(),
-                                        'Thanks to Damia Gonzalez Akimori for suggesting the addition of', 
-                                       tags$em('S. stercoralis') ,'free-living male data.', 
-                                        
                                         tags$br(),
                                         tags$br(),
                                         'For additional information regarding the browser, please see the associated publication: ',
