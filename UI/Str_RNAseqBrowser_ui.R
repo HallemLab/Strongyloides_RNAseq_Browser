@@ -6,7 +6,7 @@ navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            theme = shinytheme("flatly"), 
            collapsible = F,
            id = "tab",
-           text = "v2.0.0",
+           text = "v2.0.1",
            
            # Gene Browser Tab ----
            tabPanel(h4("Browse By Gene"),

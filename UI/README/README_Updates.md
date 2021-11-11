@@ -1,5 +1,5 @@
-### v2.0.0 - Nov 6, 2021:
-Updated *S. stercoralis* and *S. ratti* Kallisto alignments to WBPS16 reference transcriptome (replacing WBPS14). [Link to release.](https://github.com/HallemLab/Strongyloides_RNAseq_Browser) 
+### v2.0.1 - Nov 11, 2021:
+Updated *S. stercoralis* and *S. ratti* Kallisto alignments to WBPS16 reference transcriptome (replacing WBPS14), followed by bug fix to resolve pipeline error. [Link to release.](https://github.com/HallemLab/Strongyloides_RNAseq_Browser) 
   
 ### v1.2.0 - Nov 3, 2021:
 Added *S. stercoralis* free-living male RNA-seq data. Thanks to Damia Gonzalez Akimori for the suggestion. [Link to release.](https://github.com/HallemLab/Strongyloides_RNAseq_Browser/releases/tag/1.2.0)  
