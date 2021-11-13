@@ -1,15 +1,14 @@
 
 
 # Header ----
-navbarPageWithText(title = h3(em("Strongyloides"), "RNA-seq Browser"),
+navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            windowTitle = "Str-RNA-seq Browser",
            theme = shinytheme("flatly"), 
            collapsible = F,
            id = "tab",
-           text = "v2.0.1",
            
            # Gene Browser Tab ----
-           tabPanel(h4("Browse By Gene"),
+           tabPanel(title = h4("Browse By Gene"),
                     value = "GW",
                     useShinyjs(),
                     div(id = "GW",

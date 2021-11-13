@@ -34,7 +34,6 @@ suppressPackageStartupMessages({
     source("Server/theme_Publication.R")
     source('Server/limma_ranking.R')
     source("Server/generate_excel_report.R")
-    source("Server/navbarPageWithText.R")
 })
 
 # ---- Background ----
