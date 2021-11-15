@@ -127,6 +127,7 @@ tags$head(
     
      #About_Updates h3 {
     font-size: 15px;
+    text-decoration: underline;
     font-weight: bold;
     }
     
