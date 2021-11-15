@@ -16,7 +16,5 @@ remove.packages("patchwork", lib="~/R/win-library/4.1")
 devtools::install_github("thomasp85/patchwork")
 
 BiocManager::install(c("limma","edgeR","clusterProfiler"))
-BiocManager::install("clusterProfiler")
-
 
 pacman::p_load(shiny,shinyjs,shinyWidgets,htmltools,shinythemes,DT,Cairo,tidyverse,ggforce,gt,plotly,magrittr,ggthemes,gplots,svglite,Cairo,heatmaply,RColorBrewer,rcartocolor,openxlsx,egg,dendextend,vctrs,markdown)
