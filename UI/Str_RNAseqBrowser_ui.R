@@ -310,10 +310,12 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                      id = "About_Overview",
                                      includeMarkdown('UI/README/README_Features.md')
                                )
-                        ), 
+                        ),
+                        
+                        
                         column(4,
-                               panel(heading =  tagList(h5(shiny::icon("fas fa-sync-alt"),
-                                                           "Release Notes")),
+                               panel(heading =  tagList(h5(shiny::icon("fas fa-drafting-compass"),
+                                                           "Authors and Release Notes")),
                                      status = "primary",
                                      id = "About_Updates",
                                      includeMarkdown('UI/README/README_Updates.md')
@@ -426,33 +428,8 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                      id = "About_Analysis_Methods",
                                      includeMarkdown('UI/README/README_Analysis_Methods.md')
                                )
-                        ),
-                        column(6,
-                               ### App Credits ----
-                               panel( heading =  tagList(h5(shiny::icon("fas fa-drafting-compass"),
-                                                            "Authors")),
-                                      status = "primary",
-                                      p('This app was created by', 
-                                        tags$a(
-                                            href = "https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en", 
-                                            'Astra S. Bryant, PhD',target="blank"),'with assistance from Stephanie DeMarco, PhD for the ',
-                                        tags$a(href="http://www.hallemlab.com/",'Hallem Lab',target="blank"), 'at UCLA.',
-                                        tags$br(),
-                                        tags$br(),
-                                        'For additional information regarding the browser, please see the associated publication: ',
-                                        tags$a(
-                                            href = 'https://academic.oup.com/g3journal/article/11/5/jkab104/6212650', 'Bryant, DeMarco, and Hallem 2021 [G3]',target="blank"),
-                                        tags$br(),
-                                        tags$br(),
-                                        'The source code for the app is available on GitHub:', 
-                                        tags$a(
-                                            href = 'https://github.com/HallemLab/Strongyloides_RNAseq_Browser', "Strongyloides RNA-seq Browser App Repository",target="blank"),
-                                        tags$br(),
-                                        'The source code for data preprocessing and example analyses is also available on GitHub:', 
-                                        tags$a(
-                                            href = 'https://github.com/HallemLab/Bryant-DeMarco-Hallem-2021', "Bryant, DeMarco, and Hallem 2021 Repository",target="blank"))
-                               )
                         )
+                        
                     )
                     
            )
