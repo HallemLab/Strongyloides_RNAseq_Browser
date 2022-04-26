@@ -2,7 +2,7 @@
 This app was created by [Astra S. Bryant, PhD](https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en) with assistance from Stephanie DeMarco, PhD for the [Hallem Lab](http://www.hallemlab.com/) at UCLA.  
 
 ### Selected Release Notes
-- **v2.0.2** - Nov 15, 2021: current version.
+- **v2.0.3** - Apr 26, 2022: current version. Updated citations for *S. papillosus* RNA-seq data, plus minor UI updates.
 - **v2.0.1** - Nov 11, 2021:
 Updated *S. stercoralis* and *S. ratti* Kallisto alignments to WBPS16 reference transcriptome (replacing WBPS14), followed by bug fix to resolve pipeline error.
 - **v1.2.0** - Nov 3, 2021:

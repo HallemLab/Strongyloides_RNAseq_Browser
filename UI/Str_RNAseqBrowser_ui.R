@@ -13,7 +13,20 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                     useShinyjs(),
                     div(id = "GW",
                         
-                        ## Fluid Row 1: Species Selection Panel + Download Study Info Dropdown Menu ----    
+                        ## Fluid Row 1: General usage notes to orient users ----
+                        fluidRow(
+                            column(12,
+                                   alert(status = "success",
+                                         dismissible = TRUE,
+                                         id = "userNotes_GW",
+                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inacivity. If this happens, please reload the server connection.",
+                                           tags$br(),
+                                         "For more information and citation purposes, please see", 
+                                         tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650")
+                                         ))
+                        ),
+                        
+                        ## Fluid Row 2: Species Selection Panel + Download Study Info Dropdown Menu ----    
                         fluidRow(
                             
                             column(3,
@@ -53,7 +66,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                    offset = 6
                             )
                         ),
-                        ## Fluid Row 2: Input Gene Panel + Life Stage Legend + Gene Dropdown Menu + Gene Expression Plots Panel----
+                        ## Fluid Row 3: Input Gene Panel + Life Stage Legend + Gene Dropdown Menu + Gene Expression Plots Panel----
                         fluidRow(
                             
                             column(3,
@@ -83,7 +96,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                             )
                             
                         ),
-                        ## Fluid Row 3: Input Pairwise Comparisons Panel + Volcano Plot Panel + Contrasts Dropdown Menu ----
+                        ## Fluid Row 4: Input Pairwise Comparisons Panel + Volcano Plot Panel + Contrasts Dropdown Menu ----
                         fluidRow(
                             column(3,
                                    conditionalPanel(condition = "(output.downloadbuttonsGenes || output.volcano_GW)",
@@ -104,7 +117,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                                     uiOutput("volcano_GW")
                                    )
                             )),
-                        ## Fluid Row 4: Download Options for Saving DGE Table Results Panel + Differential Gene Expression Table ----
+                        ## Fluid Row 5: Download Options for Saving DGE Table Results Panel + Differential Gene Expression Table ----
                         fluidRow(
                             column(3,
                                    conditionalPanel(condition = "output.downloadbuttonsGenes && input.goLifeStage_GW != 0 && output.contrastDisplaySelection_GW && output.volcano_GW",
@@ -161,7 +174,19 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                     value = "LS",
                     useShinyjs(),
                     div(id = "LS",
-                        ## Fluid Row 1: Species Selection Panel + Life Stage Legend + Download Study Info Dropdown Menu ----
+                        fluidRow(
+                            column(12,
+                                   alert(status = "success",
+                                         dismissible = TRUE,
+                                         id = "userNotes_LS",
+                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inacivity. If this happens, please reload the server connection.",
+                                         tags$br(),
+                                         "For more information and citation purposes, please see", 
+                                         tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650")
+                                   ))
+                        ),
+                        
+                        ## Fluid Row 2: Species Selection Panel + Life Stage Legend + Download Study Info Dropdown Menu ----
                         fluidRow(
                             column(3,
                                    panel(
@@ -206,7 +231,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                         ),
                         
                         
-                        ## Fluid Row 2: Input Pairwise Comparisons Panel + Volcano Plot Panel + Contrasts Dropdown Menu ----    
+                        ## Fluid Row 3: Input Pairwise Comparisons Panel + Volcano Plot Panel + Contrasts Dropdown Menu ----    
                         fluidRow(
                             column(3,
                                    
@@ -225,7 +250,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                    )
                             )),
                         
-                        ## Fluid Row 3: Download Options for Saving DGE Table Results Panel + Differential Gene Expression Table ----
+                        ## Fluid Row 4: Download Options for Saving DGE Table Results Panel + Differential Gene Expression Table ----
                         
                         fluidRow(
                             column(3,
@@ -271,7 +296,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                             )
                             
                         ),
-                        ## Fluid Row 4: Gene Set Enrichment Analysis Plot and Table Panels ----
+                        ## Fluid Row 5: Gene Set Enrichment Analysis Plot and Table Panels ----
                         fluidRow(
                             
                             column(6,
@@ -300,7 +325,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            ),
            
            # About Tab ----
-           tabPanel(h4("About"),
+           tabPanel(h4("About (v2.0.3)"),
                     value = "about",
                     fluidRow(
                         column(8,
