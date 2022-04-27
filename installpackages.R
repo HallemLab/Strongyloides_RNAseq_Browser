@@ -8,7 +8,6 @@ library(pacman)
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 library(BiocManager)
-BiocManager::install(version = "3.14")
 
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
