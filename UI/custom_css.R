@@ -165,6 +165,16 @@ tags$head(
     #download_DGEdt_direction_GW .shiny-options-group{
     font-size: 13px;
     }
+    
+    #userNotes_GW a {
+    color: white;
+    text-decoration: underline;
+    }
+    
+    #userNotes_LS a {
+    color: white;
+    text-decoration: underline;
+    }
 
                     "))
     
