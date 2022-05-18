@@ -324,6 +324,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                     )
            ),
            
+           
            # About Tab ----
            tabPanel(h4("About (v2.0.3)"),
                     value = "about",
@@ -455,6 +456,32 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                )
                         )
                         
+                    )
+                    
+           ),
+           
+           # Tutorials Tab ----
+           tabPanel(h4("Tutorials"),
+                    value = "tutorials",
+                    fluidRow(
+                        column (12,
+                                alert(status = "success",
+                                      dismissible = TRUE,
+                                      id = "tutorial_alert",
+                                      "Additional tutorials coming soon!",
+                                      tags$br(),
+                                      "For more information regarding analysis methods and browser functionality, please see the About tab."
+                                )
+                        )
+                    ),
+                    fluidRow(
+                        column(12,
+                               panel(
+                                     status = "primary",
+                                     id = "Tutorial_Workflow",
+                                     img(src='Tutorial_workflow.png', style = "width: 70vw; display: block; margin-left: auto; margin-right: auto")
+                               )
+                        )
                     )
                     
            )
