@@ -326,7 +326,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            
            
            # About Tab ----
-           tabPanel(h4("About (v2.0.4)"),
+           tabPanel(h4("About (v2.0.5)"),
                     value = "about",
                     fluidRow(
                         column(8,
