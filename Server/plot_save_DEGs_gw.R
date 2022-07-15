@@ -9,15 +9,23 @@ pull_DEGs_GW <- reactive({
                                              vals$comparison_GW, nomatch = 1)
     } else {vals$displayedComparison_GW <- 1}
     
+    if(isTruthy(input$bkgndVolcanoYN_GW)){
+        vals$includeBkgnd <- TRUE
+    } else {vals$includeBkgnd <- FALSE}
+    
+    if(isTruthy(input$scaleVolcanoYN_GW)){
+        vals$scaletogenome <- FALSE
+    } else {vals$scaletogenome <- TRUE}
+  
     #### Volcano Plots
     point_labels <- if(nrow(vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]])<
                        20){guide_legend(override.aes = list(size = 4))} else {FALSE}
     setProgress(0.6)
     vplot <- ggplot(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]) +
         aes(y=BH.adj.P.Val, x=logFC) +
-        scale_y_continuous(trans = trans_reverser('log10')) +
-        geom_point(size=3,
-                   na.rm = T) +
+        scale_y_continuous(trans = trans_reverser('log10')) + { 
+            if (vals$includeBkgnd == TRUE) geom_point(size=3,
+                   na.rm = T) } +
         geom_point(data = vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]], 
                    mapping = aes(y=(BH.adj.P.Val), 
                                  x=logFC, 
@@ -35,8 +43,9 @@ pull_DEGs_GW <- reactive({
         geom_vline(xintercept = -lfc.thresh, 
                    linetype="longdash", 
                    colour="#2C467A", 
-                   size=1) +
-        guides(size = FALSE,
+                   size=1) + {
+                       if (vals$scaletogenome == TRUE) expand_limits(x = c(min(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$logFC), max(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$logFC)), y = c(min(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$BH.adj.P.Val), max(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$BH.adj.P.Val))) } +
+        guides(size = "none",
                colour = point_labels)+
         labs(title = paste0('Pairwise Comparison: ',
                             gsub('-',
@@ -56,6 +65,8 @@ pull_DEGs_GW <- reactive({
 
 
 ## GW: Volcano Plot, Generate UI  ----
+
+    
 output$volcano_GW <- renderUI({
     parse_contrasts_GW()
     req(vals$genelist,vals$comparison_GW)
@@ -76,11 +87,24 @@ output$volcano_GW <- renderUI({
                                              delay = 100, 
                                              delayType = "debounce")),
                 uiOutput("hover_info"),
+                uiOutput("bkgndVolcanoGW"),
+                uiOutput('scaleVolcanoGW'),
                 uiOutput("downloadVolcanoGW")
         )
     )
 })
 
+output$bkgndVolcanoGW <- renderUI({
+    req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
+    checkboxInput("bkgndVolcanoYN_GW",
+                  p("Show the DEG values for the entire genome as black dots in the plot background."), value = TRUE)
+})
+
+output$scaleVolcanoGW <- renderUI({
+    req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
+    checkboxInput("scaleVolcanoYN_GW",
+                  p("If values for entire genome are not shown, rescale plot axis to values of seached genes only?"), value = FALSE)
+})
 
 ## GW: Save Volcano Plot ----
 output$downloadVolcanoGW <- renderUI({
