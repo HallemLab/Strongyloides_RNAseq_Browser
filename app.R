@@ -136,8 +136,11 @@ server <- function(input, output, session) {
     ## LS: Save GSEA Plot
     ## LS: GSEA Data Table
     ## LS: Save GSEA Datatable
-    source('Server/functional_enrichment_ls.R', local = T)
-    
+    if (!config::is_active("shinyapps")){
+        source('Server/functional_enrichment_ls.R', local = T)
+    } else {
+        
+    }
     ## Output Options ----
     outputOptions(output, "downloadbuttonsGenes", suspendWhenHidden = FALSE)
     outputOptions(output, "volcano_GW", suspendWhenHidden = FALSE)
