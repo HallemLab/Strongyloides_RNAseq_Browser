@@ -71,8 +71,24 @@ perform_GSEA_LS <-reactive ({
 })
 
 ## LS: GSEA Plot ----
+output$functional_LS <- renderUI({
+    req(input$goLS)
+    parse_contrasts_LS()
+    req(vals$comparison_LS)
+    
 output$GSEAPlot_LS <- renderPlot({
     withProgress({perform_GSEA_LS()}, message = "Running GSEA...")
+})
+panel(
+    heading = tagList(h5(shiny::icon("fas fa-braille"),
+                         "Gene Set Enrichment Analysis: Plot")),
+    status = "primary",
+    plotOutput('GSEAPlot_LS'),
+    downloadButton("downloadGSEAPlot_LS",
+                   "Download Plot as PDF",
+                   class = "btn-primary")
+)
+
 })
 
 ## LS: Save GSEA Plot ----

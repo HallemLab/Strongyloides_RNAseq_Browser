@@ -24,6 +24,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                          "For more information and citation purposes, please see", 
                                          tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650")
                                          ))
+                                   
                         ),
                         
                         ## Fluid Row 2: Species Selection Panel + Download Study Info Dropdown Menu ----    
@@ -182,7 +183,10 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                                          "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inacivity. If this happens, please reload the server connection.",
                                          tags$br(),
                                          "For more information and citation purposes, please see", 
-                                         tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650")
+                                         tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650"),
+                                         tags$br(),
+                                         tags$br(),
+                                         "Also, please note that genome-wide GSEA analyses cannot be run in the shinyapps.io environment, due to limited memory. To perform a GSEA analysis on all genes in the genome, please run the Strongyloides RNAseq Browser via a local instance."
                                    ))
                         ),
                         
@@ -301,25 +305,19 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                             
                             column(6,
                                    conditionalPanel(condition = "output.pairwiseSelector_LS && input.goLS != 0 && output.volcano_LS",
-                                                    panel(
-                                                        heading = tagList(h5(shiny::icon("fas fa-braille"),
-                                                                             "Gene Set Enrichment Analysis: Plot")),
-                                                        status = "primary",
-                                                        plotOutput('GSEAPlot_LS'),
-                                                        downloadButton("downloadGSEAPlot_LS",
-                                                                       "Download Plot as PDF",
-                                                                       class = "btn-primary")
-                                                    ))
+                                                    uiOutput("functional_LS")
+                                                    )
                             ),
                             column(6,
-                                   conditionalPanel(condition = "output.pairwiseSelector_LS && input.goLS != 0 && output.volcano_LS",
+                                   conditionalPanel(condition = "output.pairwiseSelector_LS && input.goLS != 0 && output.GSEAPlot_LS",
                                                     panel(
                                                         heading = tagList(h5(shiny::icon("fas fa-table"),
                                                                              "Gene Set Enrichment Analysis: Data Table")),
                                                         status = "primary",
                                                         DTOutput('GSEATbl_LS'),
                                                         uiOutput("downloadGSEAtbl_LS")
-                                                    )))
+                                                    ))
+                                   )
                         )
                     )
            ),
