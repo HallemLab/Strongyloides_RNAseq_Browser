@@ -183,7 +183,7 @@ parse_contrasts_GW <- eventReactive(input$goLifeStage_GW,{
     }
     
     # Validation checks for contrast inputs:
-    # 1. Are constrasts complete and formatted correctly (are there life stages on each side of the '-' side)
+    # 1. Are contrasts complete and formatted correctly (are there life stages on each side of the '-' side)
     ## Check for missing "target" elements 
     missing.targets <- sapply(seq(1,nrow(targetStage)), function(x){
         row <- x

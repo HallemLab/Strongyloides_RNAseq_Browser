@@ -4,7 +4,7 @@ generateHeatmapTable <- reactive({
   
   # Set gene to display
   vals$gene_of_interest <- vals$genelist$geneID
-  
+  #browser()
   if (input$displayedGene == "Data Table") {
     excluded.genes <- dplyr::anti_join(vals$submitted.genelist, 
                                        vals$genelist,
@@ -18,19 +18,25 @@ generateHeatmapTable <- reactive({
                   id_cols = geneID,
                   values_from = mean) %>%
       left_join(vals$annotations, by = "geneID") %>%
+        dplyr::mutate(WBPSLink = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", geneID,"' target = '_blank'>", geneID,"</a>"))%>%
       dplyr::relocate(UniProtKB, Description, InterPro, GO_term,
                       In.subclade_geneID, In.subclade_percent_homology,
                       Out.subclade_geneID, Out.subclade_percent_homology,
                       Out2.subclade_geneID, Out2.subclade_percent_homology,
                       Ce_geneID, Ce_percent_homology, .after = last_col())  %>%
-      dplyr::relocate(ends_with("WBgeneID"), .before = In.subclade_geneID)%>%
-      {suppressMessages(dplyr::full_join(.,excluded.genes))} 
+        dplyr::mutate(In.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", In.subclade_geneID,"' target = '_blank'>", In.subclade_geneID,"</a>"))%>%
+        dplyr::mutate(Out.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", Out.subclade_geneID,"' target = '_blank'>", Out.subclade_geneID,"</a>"))%>%
+        dplyr::mutate(Out2.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", Out2.subclade_geneID,"' target = '_blank'>", Out2.subclade_geneID,"</a>"))%>%
+        dplyr::mutate(Ce_geneID = paste0("<a href='https://parasite.wormbase.org/Caenorhabditis_elegans_prjna13758/Gene/Summary?g=", Ce_geneID,"' target = '_blank'>", Ce_geneID,"</a>"))%>%
+        dplyr::relocate(ends_with("WBgeneID"), .before = In.subclade_geneID)%>%
+         {suppressMessages(dplyr::full_join(.,excluded.genes))} 
     
     n_num_cols <- ncol(gene_vals)
     n_num_values <- nlevels(vals$v.DEGList.filtered.norm$targets$group)
     setProgress(0.4)
     gene_vals.datatable <- gene_vals %>%
       DT::datatable(rownames = FALSE,
+                    escape = FALSE,
                     options = list(autoWidth = TRUE,
                                    scrollX = TRUE,
                                    scrollY = '300px',
@@ -48,7 +54,7 @@ generateHeatmapTable <- reactive({
                                      "}"),
                                    columnDefs = list(
                                      list(
-                                       targets = ((n_num_values+3):(n_num_values+4)),
+                                       targets = ((n_num_values+4):(n_num_values+5)),
                                        render = JS(
                                          "function(data, type, row, meta) {",
                                          "return type === 'display' && data.length > 20 ?",

@@ -2,6 +2,7 @@
 This app was created by [Astra S. Bryant, PhD](https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en) with assistance from Stephanie DeMarco, PhD for the [Hallem Lab](http://www.hallemlab.com/) at UCLA.  
 
 ### Selected Release Notes
+- **v2.2.0** - Nov 14, 2023: Added hyperlinks to WBPS for gene names. Thanks to Damia Gonzalez Akimori for the suggestion.
 - **v2.1.0** - May 25, 2023: Fixed bug related to shinyapps.io being unable to run genome-wide GSEA analysis.
 - **v2.0.5** - July 11, 2022: Updated *S. stercoralis* Kallisto alignments to [WBPS17 reference transcriptome](https://wbparasite.wordpress.com/2016/12/05/announcing-wormbase-parasite-release-8/).
 - **v2.0.1** - Nov 11, 2021:

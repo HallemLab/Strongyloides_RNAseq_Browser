@@ -168,10 +168,21 @@ assemble_DEGs_LS <- reactive({
   sample.num.cS <- sapply(cS, function(x) {colSums(vals$v.DEGList.filtered.norm$design)[[x]]}) %>% sum()
   
   n_num_cols <- sample.num.tS + sample.num.cS + 5
-  index_homologs <- length(colnames(vals$list.highlight.tbl_LS[[vals$displayedComparison_LS]])) - 5
-  
+  index_homologs <- length(colnames(vals$list.highlight.tbl_LS[[vals$displayedComparison_LS]])) - 6
+
   LS.datatable <- vals$list.highlight.tbl_LS[[vals$displayedComparison_LS]] %>%
+      dplyr::mutate(In.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", In.subclade_geneID,"' target = '_blank'>", In.subclade_geneID,"</a>"))%>%
+      dplyr::mutate(Out.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", Out.subclade_geneID,"' target = '_blank'>", Out.subclade_geneID,"</a>"))%>%
+      dplyr::mutate(Out2.subclade_geneID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", Out2.subclade_geneID,"' target = '_blank'>", Out2.subclade_geneID,"</a>"))%>%
+      dplyr::mutate(Ce_geneID = paste0("<a href='https://parasite.wormbase.org/Caenorhabditis_elegans_prjna13758/Gene/Summary?g=", Ce_geneID,"' target = '_blank'>", Ce_geneID,"</a>"))%>%
+      dplyr::mutate(WBPSLink = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", geneID,"' target = '_blank'>", geneID,"</a>")) %>%
+      dplyr::relocate(UniProtKB, Description, InterPro, GO_term,
+                      In.subclade_geneID, In.subclade_percent_homology,
+                      Out.subclade_geneID, Out.subclade_percent_homology,
+                      Out2.subclade_geneID, Out2.subclade_percent_homology,
+                      Ce_geneID, Ce_percent_homology, .after = last_col())  %>%
     DT::datatable(rownames = FALSE,
+                  escape = FALSE,
                   caption = htmltools::tags$caption(
                     style = 'caption-side: top; text-align: left; color: black',
                     htmltools::tags$b('Differentially Expressed Genes in', 
@@ -211,8 +222,8 @@ assemble_DEGs_LS <- reactive({
                                    ),
                                    list(
                                      targets = ((n_num_cols + 
-                                                   4):(n_num_cols + 
-                                                         5)),
+                                                   5):(n_num_cols + 
+                                                         6)),
                                      render = JS(
                                        "function(data, type, row, meta) {",
                                        "return type === 'display' && data.length > 20 ?",
