@@ -24,7 +24,7 @@ pull_DEGs_GW <- reactive({
     vplot <- ggplot(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]) +
         aes(y=BH.adj.P.Val, x=logFC) +
         scale_y_continuous(trans = trans_reverser('log10')) + { 
-            if (vals$includeBkgnd == TRUE) geom_point(size=3,
+            if (vals$includeBkgnd == TRUE) geom_point(size=2, color="grey",
                    na.rm = T) } +
         geom_point(data = vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]], 
                    mapping = aes(y=(BH.adj.P.Val), 
@@ -34,7 +34,7 @@ pull_DEGs_GW <- reactive({
                    na.rm = T) +
         geom_hline(yintercept = -log10(adj.P.thresh), 
                    linetype="longdash", 
-                   colour="grey", 
+                   colour="black", 
                    size=1) + 
         geom_vline(xintercept = lfc.thresh, 
                    linetype="longdash", 
@@ -51,7 +51,7 @@ pull_DEGs_GW <- reactive({
                             gsub('-',
                                  ' vs ',
                                  vals$comparison_GW[vals$displayedComparison_GW])),
-             subtitle = paste0("grey line: p = ",
+             subtitle = paste0("black dashed line: p = ",
                                adj.P.thresh, "; colored lines: log-fold change = +/-",  lfc.thresh),
              color = "GeneIDs",
              y = "BH-adjusted p-value",

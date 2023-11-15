@@ -13,10 +13,10 @@ pull_DEGs_LS <- reactive({
   vplot <- ggplot(vals$list.highlight.tbl_LS[[vals$displayedComparison_LS]]) +
     aes(y=BH.adj.P.Val, x=logFC) +
     scale_y_continuous(trans = trans_reverser('log10')) +
-    geom_point(size=2) +
+    geom_point(size=2, color = "grey") +
     geom_hline(yintercept = -log10(adj.P.thresh), 
                linetype="longdash", 
-               colour="grey", 
+               colour="black", 
                size=1) + 
     geom_vline(xintercept = lfc.thresh, 
                linetype="longdash", 
@@ -30,7 +30,7 @@ pull_DEGs_LS <- reactive({
                         gsub('-',
                              ' vs ',
                              vals$comparison_LS[vals$displayedComparison_LS])),
-         subtitle = paste0("grey line: p = ",
+         subtitle = paste0("black dashed line: p = ",
                            adj.P.thresh, "; colored lines: log-fold change = +/-", lfc.thresh),
          color = "GeneIDs",
          y = "BH-adjusted p-value",
