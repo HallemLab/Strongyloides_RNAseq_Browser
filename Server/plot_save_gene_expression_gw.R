@@ -4,7 +4,6 @@ generateHeatmapTable <- reactive({
   
   # Set gene to display
   vals$gene_of_interest <- vals$genelist$geneID
-  #browser()
   if (input$displayedGene == "Data Table") {
     excluded.genes <- dplyr::anti_join(vals$submitted.genelist, 
                                        vals$genelist,
@@ -110,15 +109,14 @@ generateHeatmapTable <- reactive({
                                                   as.character(vals$v.DEGList.filtered.norm$targets$samples[1]))-2, nchar(
                                                     as.character(vals$v.DEGList.filtered.norm$targets$samples[1])))
     )
-    
-    setProgress(0.4)
+        setProgress(0.4)
     
     clustRows <- hclust(as.dist(1-cor(t(subset.diffGenes), 
                                       method="pearson")), 
                         method="complete") 
     par(cex.main=1.2)
-    vals$HeatmapRowOrder <- order.dendrogram(ladderize(as.dendrogram(clustRows)))
-    vals$HeatmapColOrder <- order.dendrogram(ladderize(seriate_dendrogram(as.dendrogram(clustColumns),
+    vals$HeatmapRowOrder <- order.dendrogram(dendextend::ladderize(as.dendrogram(clustRows)))
+    vals$HeatmapColOrder <- order.dendrogram(dendextend::ladderize(dendextend::seriate_dendrogram(as.dendrogram(clustColumns),
                                                                           as.dist(1-cor(diffGenes, method="spearman")))))
     setProgress(0.6)
     
@@ -212,7 +210,7 @@ fetch_homologs <- reactive({
     unique()
   
   vals$homologous_genes <- genelist.allspecies
-  
+  cat(file = stderr(), 'gathered homologous genes', "\n")
   # Identify the identity of the primary species, the in.subclade species, and the two out.subclade species
   species <- switch(input$selectSpecies_GW,
                     `S. stercoralis` = 'Ss',
@@ -234,8 +232,7 @@ fetch_homologs <- reactive({
                                   'Sr' = 'Sv',
                                   'Sp' = 'Sr',
                                   'Sv' = 'Sr')
-  
-  # Load expression data for In/Out Sublade species
+  # Load expression data for In/Out Subclade species
   load(file = paste0("./Data/",species.In.subclade,"_vDGEList"))
   species.In.Log2CPM<-v.DEGList.filtered.norm$E %>%
     as_tibble(rownames = "geneID")%>%
@@ -246,8 +243,7 @@ fetch_homologs <- reactive({
                  values_to = "log2CPM") %>%
     group_by(geneID, life_stage) %>%
     dplyr::filter(geneID %in% genelist.allspecies$In.subclade_geneID)
-  remove(v.DEGList.filtered.norm)
-  
+  rm(v.DEGList.filtered.norm)
   load(file = paste0("./Data/",species.Out.subclade,"_vDGEList"))
   species.Out.Log2CPM<-v.DEGList.filtered.norm$E %>%
     as_tibble(rownames = "geneID")%>%
@@ -259,7 +255,6 @@ fetch_homologs <- reactive({
     group_by(geneID, life_stage) %>%
     dplyr::filter(geneID %in% genelist.allspecies$Out.subclade_geneID)
   remove(v.DEGList.filtered.norm)
-  
   load(file = paste0("./Data/",species.Out2.subclade,"_vDGEList"))
   species.Out2.Log2CPM<-v.DEGList.filtered.norm$E %>%
     as_tibble(rownames = "geneID")%>%
@@ -276,7 +271,6 @@ fetch_homologs <- reactive({
   life_stage_types <- lifestage_legend %>%
     dplyr::select(-group) %>%
     colnames()
-  
   plot.tbl <- bind_rows(
     Primary.species =vals$genelist.Log2CPM,
     In.subclade = species.In.Log2CPM,
@@ -295,21 +289,18 @@ fetch_homologs <- reactive({
 output$CPM.homologs <- renderPlot({
   req(input$displayedGene != "All Genes")
   req(input$displayedGene != "Data Table")
-  withProgress({
-    plot.tbl <- fetch_homologs()
-    set_displayed <- dplyr::filter(vals$homologous_genes, 
-                                   geneID %in% input$displayedGene)%>%
-      as.character()
-    
-    
-    plot.tbl <- plot.tbl %>%
-      dplyr::filter(geneID %in% set_displayed)
-    
-    mylevels <- unique(plot.tbl[order(plot.tbl$id), "geneID"])
-    plot.tbl <- plot.tbl %>%
-      mutate(geneID = factor(geneID, levels = mylevels$geneID)) %>%
-      group_by(id, geneID)
-    
+
+      withProgress({plot.tbl <- fetch_homologs()
+      set_displayed <- dplyr::filter(vals$homologous_genes, 
+                                     geneID %in% input$displayedGene)%>%
+          as.character()
+      plot.tbl <- plot.tbl %>%
+          dplyr::filter(geneID %in% set_displayed)
+      
+      mylevels <- unique(plot.tbl[order(plot.tbl$id), "geneID"])
+      plot.tbl <- plot.tbl %>%
+          mutate(geneID = factor(geneID, levels = mylevels$geneID)) %>%
+          group_by(id, geneID)
     p<-suppressWarnings (ggplot(plot.tbl) + 
                            aes(x = life_stage, y = log2CPM, fill = life_stage) +
                            stat_boxplot(geom = "errorbar", 

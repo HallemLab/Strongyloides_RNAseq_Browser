@@ -128,7 +128,7 @@ parse_ids <- eventReactive(input$goGW,{
             }) %>%
                 rowSums() %>%
                 as.logical()
-            
+           
             # Search In-group homolog IDs
             geneindex.InGroup<-sapply(terms, function(y) {
                 incProgress(amount = inc)

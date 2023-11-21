@@ -52,8 +52,8 @@ observeEvent(input$speciesGW, {
         
         setProgress(value = .75)
         
-        ## Fit a linear model to the data
-        vals$fit <- lmFit(v.DEGList.filtered.norm, v.DEGList.filtered.norm$design)
+        ## Import a linear model of the data created with lmFit
+        vals$fit <- load(file = paste0("./Data/", species, "_lmFit"))
         
         setProgress(value = 1)
         

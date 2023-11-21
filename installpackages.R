@@ -1,6 +1,6 @@
 ## Install packages required for local instance of Strongyloides RNA-seq Browser
 # Note, if you're on a Windows computer, you may need to change the folder your R packages are stored in from Read-only.
-setRepositories(ind = c(1,2,3,4,5))
+setRepositories(ind = c(1,2,3,4,5,6))
 if (!requireNamespace("pacman", quietly = TRUE))
     install.packages("pacman")
 library(pacman)
