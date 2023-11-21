@@ -15,15 +15,20 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                         
                         ## Fluid Row 1: General usage notes to orient users ----
                         fluidRow(
-                            column(12,
+                            column(9,
                                    alert(status = "success",
                                          dismissible = TRUE,
                                          id = "userNotes_GW",
-                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inacivity. If this happens, please reload the server connection.",
+                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inactivity. If this happens, please reload the server connection.",
                                            tags$br(),
                                          "For more information and citation purposes, please see", 
                                          tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650")
-                                         ))
+                                         )),
+                            column(3, 
+                                   alert(status = "info",
+                                         dismissible = TRUE,
+                                         id = "bugReport_GW", 
+                                         "To report a bug, please email Dr. Astra Bryant at astrab@uw.edu"))
                                    
                         ),
                         
@@ -176,18 +181,23 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                     useShinyjs(),
                     div(id = "LS",
                         fluidRow(
-                            column(12,
+                            column(9,
                                    alert(status = "success",
                                          dismissible = TRUE,
                                          id = "userNotes_LS",
-                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inacivity. If this happens, please reload the server connection.",
+                                         "Due to server constraints sessions run on shinyapps.io will time out after several minutes of inactivity. If this happens, please reload the server connection.",
                                          tags$br(),
                                          "For more information and citation purposes, please see", 
                                          tags$a("Bryant, DeMarco, and Hallem (2021)", href="https://academic.oup.com/g3journal/article/11/5/jkab104/6212650"),
                                          tags$br(),
                                          tags$br(),
                                          "Also, please note that genome-wide GSEA analyses cannot be run in the shinyapps.io environment, due to limited memory. To perform a GSEA analysis on all genes in the genome, please run the Strongyloides RNAseq Browser via a local instance."
-                                   ))
+                                   )),
+                            column(3, 
+                                   alert(status = "info",
+                                         dismissible = TRUE,
+                                         id = "bugReport_GW", 
+                                         "To report a bug, please email Dr. Astra Bryant at astrab@uw.edu"))
                         ),
                         
                         ## Fluid Row 2: Species Selection Panel + Life Stage Legend + Download Study Info Dropdown Menu ----
@@ -324,7 +334,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
            
            
            # About Tab ----
-           tabPanel(h4("About (v2.1.0)"),
+           tabPanel(h4("About (v2.3.0)"),
                     value = "about",
                     fluidRow(
                         column(8,

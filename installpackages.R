@@ -12,14 +12,15 @@ library(BiocManager)
 if (!requireNamespace("devtools", quietly = TRUE))
     install.packages("devtools")
 
-BiocManager::install("DO.db")
-BiocManager::install("HDO.db")
-BiocManager::install("igraph")
-BiocManager::install("clusterProfiler")
-BiocManager::install(c("limma","edgeR"))
+BiocManager::install("DO.db", ask=FALSE)
+BiocManager::install("HDO.db", ask=FALSE)
+BiocManager::install("igraph", ask=FALSE)
+BiocManager::install("clusterProfiler", ask=FALSE)
+BiocManager::install(c("limma","edgeR"),ask=FALSE)
 
 pacman::p_load(shiny,shinyjs,shinyWidgets,htmltools,shinythemes,DT,Cairo,tidyverse,ggforce,gt,plotly,magrittr,ggthemes,gplots,svglite,Cairo,heatmaply,RColorBrewer,rcartocolor,openxlsx,egg,dendextend,vctrs,markdown,config)
 # Note, on mac you may need to download XQuartz for some of these packages, specially Cairo to work correctly. 
 
-remove.packages("patchwork", lib="~/R/win-library/4.1")
+libPath <- .libPaths()
+remove.packages("patchwork", lib=libPath)
 devtools::install_github("thomasp85/patchwork")
