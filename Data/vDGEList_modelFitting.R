@@ -6,7 +6,6 @@ for (x in species_list$species) {
 # Import a variance-stabilized DEGList created by voom transformation command.
 # Outputs: E = normalized CPMexpression values on the log2 scale
 load(file = paste0("../Data/",x,"_vDGEList"))
-v.DEGList.filtered.norm <- v.DEGList.filtered.norm
 
 target.contrast.options <- v.DEGList.filtered.norm$targets$group
 
