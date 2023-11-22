@@ -6,7 +6,6 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
 
     contrast.matrix <- makeContrasts(contrasts = comparison,
                                      levels = v.DEGList.filtered.norm$design)
-    
     fits <- contrasts.fit(fit, contrast.matrix)
     ebFit <- limma::eBayes(fits)
     setProgress(0.05)
