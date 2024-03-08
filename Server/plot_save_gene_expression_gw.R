@@ -185,7 +185,7 @@ generateGenePlot <- reactive({
                                 subtitle=paste("Selected gene:",
                                                vals$gene_of_interest)) +
                            theme_Publication() + 
-                           theme(aspect.ratio=2/3))
+                           theme(aspect.ratio=2/4))
   vals$gene_plot <- p
   p
 })
@@ -319,12 +319,11 @@ output$CPM.homologs <- renderPlot({
                                 title= "Expression of Homologous Genes Across Species",
                                 subtitle=paste("Selected gene:",
                                                vals$gene_of_interest)) +
-                           facet_wrap(~geneID, 
-                                      nrow = 1,
-                                      scales = "free_x") +
+                             facet_grid(~id + geneID, 
+                                        scales = "free_x",
+                                        space = "free_x") +
                            theme_Publication() + 
-                           theme(aspect.ratio=2/3,
-                                 axis.text.x = element_text(
+                           theme(axis.text.x = element_text(
                                    angle = 45,
                                    hjust = 1))
     )

@@ -51,7 +51,7 @@ pull_DEGs_GW <- reactive({
                             gsub('-',
                                  ' vs ',
                                  vals$comparison_GW[vals$displayedComparison_GW])),
-             subtitle = paste0("black dashed line: p = ",
+             subtitle = paste0("grey dashed line: p = ",
                                adj.P.thresh, "; colored lines: log-fold change = +/-",  lfc.thresh),
              color = "GeneIDs",
              y = "BH-adjusted p-value",
@@ -97,7 +97,7 @@ output$volcano_GW <- renderUI({
 output$bkgndVolcanoGW <- renderUI({
     req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
     checkboxInput("bkgndVolcanoYN_GW",
-                  p("Show the DEG values for the entire genome as black dots in the plot background."), value = TRUE)
+                  p("Show the DEG values for the entire genome as grey dots in the plot background."), value = TRUE)
 })
 
 output$scaleVolcanoGW <- renderUI({

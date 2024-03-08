@@ -196,7 +196,7 @@ navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
                             column(3, 
                                    alert(status = "info",
                                          dismissible = TRUE,
-                                         id = "bugReport_GW", 
+                                         id = "bugReport_LS", 
                                          "To report a bug, please email Dr. Astra Bryant at astrab@uw.edu"))
                         ),
                         
