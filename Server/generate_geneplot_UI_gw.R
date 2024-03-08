@@ -1,6 +1,7 @@
 ## GW: Generate Panel for Gene-wise Plots ----
 output$genePlotPanel_GW <- renderUI({
     parse_ids()
+    req(vals$genelist)
     isolate({
         tagList(div(id = "CPMPlotlydiv_parent",
                     panel(
@@ -21,6 +22,7 @@ output$genePlotPanel_GW <- renderUI({
 ## GW: Generate Responsive Selection for Gene to Display ----
 output$geneDisplaySelection_GW <- renderUI({
     parse_ids()
+    req(vals$genelist)
     if (length(vals$genelist$geneID)>1) {
         choices <- c("All Genes", "Data Table",vals$genelist$geneID)
     } else {
