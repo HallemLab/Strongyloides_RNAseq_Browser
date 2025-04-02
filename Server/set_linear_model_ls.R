@@ -8,8 +8,9 @@ set_linear_model_LS <- eventReactive(input$goLS,{
                   vals$multipleCorrection_LS, 
                   NA, 
                   vals, vals$fit, 
-                  vals$v.DEGList.filtered.norm, 
-                  adj.P.thresh, 
+                  vals$v.DGEList.filtered.norm, 
+                  input$adj.P.thresh_LS,
+                  input$lfc.thresh_LS, 
                   vals$diffGenes.df)
     vals$list.highlight.tbl_LS <- vals$list.highlight.tbl
 })

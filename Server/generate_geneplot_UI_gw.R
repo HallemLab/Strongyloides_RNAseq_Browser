@@ -43,7 +43,7 @@ output$geneDisplaySelection_GW <- renderUI({
 ## GW: Generate Legend Explaining the Life Stages ----
 output$lifeStageLegend_GW <- renderDT({
     lifestage_legend.df <- lifestage_legend %>%
-        dplyr::select(any_of(unique(vals$v.DEGList.filtered.norm$targets$group))) %>%
+        dplyr::select(any_of(unique(vals$v.DGEList.filtered.norm$targets$group))) %>%
         as.data.frame()
     rownames(lifestage_legend.df)<- c("<b>Life Stage</b>")
     lifestage_legend.DT <- lifestage_legend.df %>%

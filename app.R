@@ -29,9 +29,10 @@ suppressPackageStartupMessages({
     library(vctrs)
     library(clusterProfiler)
     library(markdown)
-    source("Server/ggheatmap_local.R")
-    source("Server/calc_DEG_tbl.R")
-    source("Server/theme_Publication.R")
+    source("Utils/ggheatmap_local.R")
+    source("Utils/wormpal.R")
+    source("Utils/theme_Publication.R")
+    source("Server/calc_DGE_tbl.R")
     source('Server/limma_ranking.R')
     source("Server/generate_excel_report.R")
 })
@@ -109,8 +110,8 @@ server <- function(input, output, session) {
     ## GW: Save Volcano Plot
     ## GW: Volcano Hover Info
     ## GW: Data Table of Differentially Expressed Genes from User Subset
-    ## GW: Save Excel Tables with DEG Tables
-    source('Server/plot_save_DEGs_gw.R', local = T)
+    ## GW: Save Excel Tables with DGE Tables
+    source('Server/plot_save_DGEs_gw.R', local = T)
     
     ## LS: Pairwise Comparisons Across Life Stage ----
     ## LS: Clear Comparison Selections
@@ -127,8 +128,8 @@ server <- function(input, output, session) {
     ## LS: Save Volcano Plot
     ## LS: Volcano Hover Info
     ## LS: Data Table of Differentially Expressed Genes
-    ## LS: Save Excel Tables with DEG Tables
-    source('Server/plot_save_DEGs_ls.R', local = T)
+    ## LS: Save Excel Tables with DGE Tables
+    source('Server/plot_save_DGEs_ls.R', local = T)
     
     ## LS: Functional Enrichment Analysis ----
     ## LS: Run GSEA

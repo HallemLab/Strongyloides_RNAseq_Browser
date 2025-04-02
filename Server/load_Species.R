@@ -23,14 +23,19 @@ observeEvent(input$speciesGW, {
     
     withProgress({
         
-        # Import a variance-stabilized DEGList created by voom transformation command.
+        # Import a variance-stabilized DGEList created by voom transformation command.
         # Outputs: E = normalized CPMexpression values on the log2 scale
         load(file = paste0("./Data/",species,"_vDGEList"))
-        vals$v.DEGList.filtered.norm <- v.DEGList.filtered.norm
+     
+        if (!exists('v.DGEList.filtered.norm') && exists ('v.DEGList.filtered.norm')) {
+            v.DGEList.filtered.norm<-v.DEGList.filtered.norm #This is here because there is some old code where the filename was different.
+            rm(v.DEGList.filtered.norm)
+        }
+        vals$v.DGEList.filtered.norm <- v.DGEList.filtered.norm
         
         setProgress(value = .25)
         
-        vals$target.contrast.options <- vals$v.DEGList.filtered.norm$targets$group
+        vals$target.contrast.options <- vals$v.DGEList.filtered.norm$targets$group
         # Import a tidy dataframe containing gene annotations for all genes in the genome (including those that are excluded from this database.)
         load(file = paste0("./Data/",species,"_geneAnnotations"))
         vals$annotations <- as_tibble(annotations, rownames = "geneID")
@@ -38,16 +43,16 @@ observeEvent(input$speciesGW, {
         setProgress(value = .5)
         
         # Parse vDGEList into a tibble containing Log2CPM information
-        vals$Log2CPM<-v.DEGList.filtered.norm$E %>%
+        vals$Log2CPM<-v.DGEList.filtered.norm$E %>%
             as_tibble(rownames = "geneID")%>%
             setNames(nm = c("geneID", 
-                            as.character(v.DEGList.filtered.norm$targets$group))) %>%
+                            as.character(v.DGEList.filtered.norm$targets$group))) %>%
             pivot_longer(cols = -geneID,
                          names_to = "life_stage", 
                          values_to = "log2CPM") %>%
             group_by(geneID, life_stage)
         
-        vals$diffGenes.df <- v.DEGList.filtered.norm$E %>%
+        vals$diffGenes.df <- v.DGEList.filtered.norm$E %>%
             as_tibble(rownames = "geneID", .name_repair = "unique")
         
         setProgress(value = .75)
@@ -75,9 +80,9 @@ StudyInfo.filename.GW <- reactive({
     
     Info.type <- switch(input$which.Experimental.Info.GW,
                         `Study Design` = '_studyDesign.txt',
-                        `Log2CPM Gene Counts` = 'RNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Log2CPM Gene Counts` = '_log2cpm_filtered_norm_voom.csv',
                         `vDGEList` = "_vDGEList",
-                        `Discarded Gene Counts` = "RNAseq_discardedGene_counts.csv")
+                        `Discarded Gene Counts` = "_discardedGene_counts.csv")
     
     file.location <- switch(input$which.Experimental.Info.GW,
                             `Study Design` = './www/',
@@ -132,7 +137,7 @@ observeEvent(input$speciesLS, {
         # Import a variance-stabilized DEGList created by voom transformation command.
         # Outputs: E = normalized CPMexpression values on the log2 scale
         load(file = paste0("./Data/",species,"_vDGEList"))
-        vals$v.DEGList.filtered.norm <- v.DEGList.filtered.norm
+        vals$v.DGEList.filtered.norm <- v.DGEList.filtered.norm
         
         setProgress(value = .25)
         
@@ -143,16 +148,16 @@ observeEvent(input$speciesLS, {
         setProgress(value = .5)
         
         # Parse vDGEList into a tibble containing Log2CPM information
-        vals$Log2CPM<-v.DEGList.filtered.norm$E %>%
+        vals$Log2CPM<-v.DGEList.filtered.norm$E %>%
             as_tibble(rownames = "geneID")%>%
             setNames(nm = c("geneID", 
-                            as.character(v.DEGList.filtered.norm$targets$group))) %>%
+                            as.character(v.DGEList.filtered.norm$targets$group))) %>%
             pivot_longer(cols = -geneID,
                          names_to = "life_stage", 
                          values_to = "log2CPM") %>%
             group_by(geneID, life_stage)
         
-        vals$diffGenes.df <- v.DEGList.filtered.norm$E %>%
+        vals$diffGenes.df <- v.DGEList.filtered.norm$E %>%
             as_tibble(rownames = "geneID", .name_repair = "unique")
         
         setProgress(value = .75)
@@ -179,9 +184,9 @@ StudyInfo.filename.LS <- reactive({
     
     Info.type <- switch(input$which.Experimental.Info.LS,
                         `Study Design` = '_studyDesign.txt',
-                        `Log2CPM Gene Counts` = 'RNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Log2CPM Gene Counts` = '_log2cpm_filtered_norm_voom.csv',
                         `vDGEList` = "_vDGEList",
-                        `Discarded Gene Counts` = "RNAseq_discardedGene_counts.csv")
+                        `Discarded Gene Counts` = "_discardedGene_counts.csv")
     
     file.location <- switch(input$which.Experimental.Info.LS,
                             `Study Design` = './www/',
@@ -220,21 +225,21 @@ output$StudyInfo.panel.LS <- renderUI({
 StudyInfo.filename.About <- reactive({
     Info.type <- switch(input$which.Experimental.Info.About,
                         `Ss Study Design` = 'Ss_studyDesign.txt',
-                        `Ss Log2CPM Gene Counts` = 'SsRNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Ss Log2CPM Gene Counts` = 'Ss_log2cpm_filtered_norm_voom.csv',
                         `Ss vDGEList` = "Ss_vDGEList",
-                        `Ss Discarded Gene Counts` = "SsRNAseq_discardedGene_counts.csv",
+                        `Ss Discarded Gene Counts` = "Ss_discardedGene_counts.csv",
                         `Sr Study Design` = 'Sr_studyDesign.txt',
-                        `Sr Log2CPM Gene Counts` = 'SrRNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Sr Log2CPM Gene Counts` = 'Sr_log2cpm_filtered_norm_voom.csv',
                         `Sr vDGEList` = "Sr_vDGEList",
-                        `Sr Discarded Gene Counts` = "SrRNAseq_discardedGene_counts.csv",
+                        `Sr Discarded Gene Counts` = "Sr_discardedGene_counts.csv",
                         `Sp Study Design` = 'Sp_studyDesign.txt',
-                        `Sp Log2CPM Gene Counts` = 'SpRNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Sp Log2CPM Gene Counts` = 'Sp_log2cpm_filtered_norm_voom.csv',
                         `Sp vDGEList` = "Sp_vDGEList",
-                        `Sp Discarded Gene Counts` = "SpRNAseq_discardedGene_counts.csv",
+                        `Sp Discarded Gene Counts` = "Sp_discardedGene_counts.csv",
                         `Sv Study Design` = 'Sv_studyDesign.txt',
-                        `Sv Log2CPM Gene Counts` = 'SvRNAseq_log2cpm_filtered_norm_voom.csv',
+                        `Sv Log2CPM Gene Counts` = 'Sv_log2cpm_filtered_norm_voom.csv',
                         `Sv vDGEList` = "Sv_vDGEList",
-                        `Sv Discarded Gene Counts` = "SvRNAseq_discardedGene_counts.csv")
+                        `Sv Discarded Gene Counts` = "Sv_discardedGene_counts.csv")
     
     file.location <- switch(input$which.Experimental.Info.About,
                             `Ss Study Design` = './www/',

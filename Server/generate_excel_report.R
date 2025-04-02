@@ -5,7 +5,7 @@ generate_excel_report <- function(comparison, tbl,
                                   expressionnotes = "",
                                   multiplecorrection = "",
                                   filteredacross = "",
-                                  DEGpattern = "",
+                                  DGEpattern = "",
                                   proportionexport = "",
                                   n_header_rows = 10){
   
@@ -42,7 +42,7 @@ generate_excel_report <- function(comparison, tbl,
               paste0("Report generated on ", format(Sys.Date(), "%B %d, %Y")),
               expressionnotes,
               multiplecorrection,
-              DEGpattern,
+              DGEpattern,
               proportionexport,
               filteredacross
             )

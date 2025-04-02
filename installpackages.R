@@ -18,7 +18,7 @@ BiocManager::install("igraph", ask=FALSE)
 BiocManager::install("clusterProfiler", ask=FALSE)
 BiocManager::install(c("limma","edgeR"),ask=FALSE)
 
-pacman::p_load(shiny,shinyjs,shinyWidgets,htmltools,shinythemes,DT,Cairo,tidyverse,ggforce,gt,plotly,magrittr,ggthemes,gplots,svglite,Cairo,heatmaply,RColorBrewer,rcartocolor,openxlsx,egg,dendextend,vctrs,markdown,config)
+pacman::p_load(shiny,shinyjs,shinyWidgets,config,htmltools,shinythemes,DT,Cairo,tidyverse,ggforce,gt,plotly,magrittr,ggthemes,gplots,svglite,Cairo,heatmaply,RColorBrewer,rcartocolor,openxlsx,egg,dendextend,vctrs,markdown,config)
 # Note, on mac you may need to download XQuartz for some of these packages, specially Cairo to work correctly. 
 
 libPath <- .libPaths()

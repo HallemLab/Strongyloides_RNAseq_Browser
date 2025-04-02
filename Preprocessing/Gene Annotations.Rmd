@@ -1,0 +1,231 @@
+---
+title: "Strongyloides spp. Gene Annotations"
+author: "Astra Bryant"
+date: "2024-12-11"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+The goal of this file is to import and clean gene annotation information for all genes from the following *Strongyloides*  species: *S. stercoralis* (SSTP annotations),*S. ratti*, *S. papillosus*, and *S. venezuelensis*.
+
+Annotation information includes:
+  * Gene name
+  * WormBase gene name/IDs
+  * WormBase description
+  * InterPro description
+  * Homologs/Percent homology with other *Caenorhabditis* species  
+
+```{r setup, echo = FALSE, results = FALSE, include = FALSE}
+if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+if (!require("tximport", quietly = TRUE)) BiocManager::install("tximport", ask = FALSE)
+if (!require("ensembldb", quietly = TRUE)) BiocManager::install("ensembldb", ask = FALSE)
+if (!require("biomaRt", quietly = TRUE)) BiocManager::install("biomaRt", ask = FALSE)
+if (!require("pacman", quietly = TRUE)) install.packages("pacman")
+pacman::p_load("tidyverse","data.table", "magrittr","ensembldb", "biomaRt", "knitr")
+
+```
+
+```{r geneAnnotation}
+# Introduction to this chunk -----------
+# This chunk imports gene annotation information using WBPS BiomaRT
+# It will generate and save a table.
+
+# Get gene information from BiomaRT and filter -----
+species_list <- tibble(species = c('ststerprjeb528', 'strattprjeb125', 'stpapiprjeb525', 'stveneprjeb530'))
+comparison_list <- tibble(species = c('ststerprjeb528', 'strattprjeb125', 'stpapiprjeb525', 'stveneprjeb530', 'caelegprjna13758'))
+
+for (x in species_list$species) {
+  comparison.attributes <- dplyr::filter(comparison_list, species!= x ) %>%
+  dplyr::mutate(geneID = paste0(species, "_gene"), geneName = paste0(species, "_gene_name"), percID = paste0(species, "_homolog_perc_id"))
+
+  
+annotations <- getBM(attributes=c('wbps_transcript_id',
+                                  'wbps_gene_id',
+                                  'chromosome_name',
+                                  'description',
+                                comparison.attributes$geneID[[1]],
+                                comparison.attributes$geneName[[1]],
+                                comparison.attributes$percID[[1]],
+                                comparison.attributes$geneID[[2]],
+                                comparison.attributes$geneName[[2]],
+                                comparison.attributes$percID[[2]],
+                                comparison.attributes$geneID[[3]],
+                                comparison.attributes$geneName[[3]],
+                                comparison.attributes$percID[[3]],
+                                comparison.attributes$geneID[[4]],
+                                comparison.attributes$geneName[[4]],
+                                comparison.attributes$percID[[4]]),
+                     # grab the annotations from WormBase ParaSite
+                     mart = useMart(biomart="parasite_mart", 
+                                    dataset = "wbps_gene", 
+                                    host="https://release-18.parasite.wormbase.org", #Using the archived version of biomart because the XLOC gene ids are not useful.
+                                    port = 443),
+                     filters = 'species_id_1010',
+                     useCache = T,
+                     value = x) %>%
+    as_tibble(.name_repair = "unique") %>%
+    dplyr::rename(Description = "Gene description",
+                  Location = "Chromosome/scaffold name",
+                GS1_percent_homology = "% identity...7",
+                GS2_percent_homology = "% identity...10",
+                GS3_percent_homology = "% identity...13",
+                GS4_percent_homology = "% identity...16"
+  ) %>%
+    tidyr::unite("GS4_homologID", 15, 14, sep = " | ", remove = T)%>%
+    tidyr::unite("GS3_homologID", 12, 11, sep = " | ", remove = T)%>%
+    tidyr::unite("GS2_homologID", 9, 8, sep = " | ", remove = T) %>%
+    tidyr::unite("GS1_homologID", 6, 5, sep = " | ", remove = T)
+
+annotations$GS1_homologID<- str_remove_all(annotations$GS1_homologID, "^ \\| ")
+annotations$GS2_homologID<- str_remove_all(annotations$GS2_homologID, "^ \\| ")
+annotations$GS3_homologID<- str_remove_all(annotations$GS3_homologID, "^ \\| ")
+annotations$GS4_homologID<- str_remove_all(annotations$GS4_homologID, "^ \\| ")
+
+if (x == "strattprjeb125"){
+    annotations <- dplyr::rename(annotations, geneID = "Transcript stable ID", WBgeneID = "Gene stable ID") %>%
+        group_by(geneID)
+    annotations$geneID <- str_remove_all(annotations$geneID, "\\.[0-9]$")
+    annotations$geneID  <- str_remove_all(annotations$geneID, "[a-z]$")
+} else {
+    annotations <- dplyr::rename(annotations, geneID = "Gene stable ID") %>%
+        dplyr::select(!"Transcript stable ID")
+    
+}
+
+if (x == "ststerprjeb528"){
+    chromosomes <- read.table(file = "./Data/Ss/SSTP_XLOC_overlapping_genes.txt",
+                              header = T) %>%
+        tidyr::unite("XLOC_IDs", 2, 3, sep = " | ", remove = T)
+    annotations <- dplyr::select(annotations, !"Location") %>%
+        left_join(chromosomes, join_by(geneID == SSTP_GeneID), relationship = "many-to-many") %>%
+        dplyr::rename(Location = Chromosome) %>%
+        dplyr::relocate(XLOC_IDs:Location, .after = geneID)
+} 
+
+# Gather then clean interpro description, removing duplications and collapsing to one line
+annt.temp.3 <- getBM(attributes=c('wbps_gene_id', 
+                                     'interpro_short_description',
+                                     'go_name_1006',
+                                     'uniprot_sptrembl'),
+                     # grab the annotations from WormBase ParaSite
+                     mart = useMart(biomart="parasite_mart", 
+                                    dataset = "wbps_gene", 
+                                    host="https://release-18.parasite.wormbase.org", #Using the archived version of biomart because the XLOC gene ids are not useful.
+                                    port = 443),
+                     filters = 'species_id_1010',
+                     useCache = T,
+                     value = x) %>%
+  dplyr::rename(geneID = "wbps_gene_id",
+                InterPro = "interpro_short_description",
+                GO_term = "go_name_1006",
+                UniProtKB = "uniprot_sptrembl") %>%
+  group_by(geneID)
+
+# Clean up InterPro, GO, and UniProtKB terms, removing duplications and collapsing to one line each
+interpro_terms<-annt.temp.3 %>%
+    dplyr::select(geneID, InterPro) %>%
+    group_by(geneID) %>%
+    subset(InterPro != "") %>%
+    dplyr::distinct(InterPro, .keep_all = TRUE) %>%
+    dplyr::summarise(InterPro = paste(InterPro, 
+                                    collapse = ', ')) 
+go_terms<-annt.temp.3 %>%
+    dplyr::select(geneID, GO_term) %>%
+    group_by(geneID) %>%
+     subset(GO_term != "") %>%
+    dplyr::distinct(GO_term, .keep_all = TRUE) %>%
+    dplyr::summarise(GO_term = paste(GO_term, collapse = ', '))
+
+UniProtKB_terms<-annt.temp.3 %>%
+    dplyr::select(geneID, UniProtKB) %>%
+    group_by(geneID) %>%
+     subset(UniProtKB != "") %>%
+    dplyr::distinct(UniProtKB, .keep_all = TRUE) %>%
+    dplyr::summarise(UniProtKB = paste(UniProtKB, collapse = ', '))
+
+if (any(annotations$geneID %in% interpro_terms$geneID)){
+annotations <-left_join(annotations, interpro_terms) %>%
+    left_join(go_terms) %>%
+    left_join(UniProtKB_terms) %>%
+  relocate(InterPro, GO_term, UniProtKB, .after = Description) %>%
+    group_by(geneID)
+} else {
+annotations <-left_join(annotations, interpro_terms, by = join_by(WBgeneID == geneID)) %>%
+    left_join(go_terms, by = join_by(WBgeneID == geneID)) %>%
+    left_join(UniProtKB_terms, by = join_by(WBgeneID == geneID)) %>%
+  relocate(InterPro, GO_term, UniProtKB, .after = Description) %>%
+    group_by(geneID)
+}
+
+# Remove source code to shorten the description
+annotations$Description <- annotations$Description %>%
+  str_replace_all(string = ., 
+                  pattern = "  \\[Source:.*\\]", 
+                  replacement = "")
+
+# Replace empty string values with NAs
+annotations[annotations == "NA | NA"]<-NA
+annotations[annotations == " | "]<-NA
+
+# Remove any duplicates in the possible homolog matches. 
+# Select based on highest % homology.
+# Give fake value here to make sure genes 
+# without homologs aren't filtered out
+annotations$GS1_percent_homology[
+  is.na(annotations$GS1_percent_homology)] <- 1000 
+annotations$GS2_percent_homology[
+  is.na(annotations$GS2_percent_homology)] <- 1000
+annotations$GS3_percent_homology[
+  is.na(annotations$GS3_percent_homology)] <- 1000
+annotations$GS4_percent_homology[
+  is.na(annotations$GS4_percent_homology)] <- 1000
+
+annotations <-annotations %>%
+  slice_max(n = 1, order_by = GS1_percent_homology, 
+            with_ties = FALSE) %>%
+  slice_max(n = 1, order_by = GS2_percent_homology, 
+            with_ties = FALSE) %>%
+  slice_max(n = 1, order_by = GS3_percent_homology, 
+            with_ties = FALSE)%>%
+  slice_max(n = 1, order_by = GS4_percent_homology, 
+            with_ties = FALSE)
+
+annotations$GS1_percent_homology[
+  annotations$GS1_percent_homology == 1000] <- NA
+annotations$GS2_percent_homology[
+  annotations$GS2_percent_homology == 1000]<- NA
+annotations$GS3_percent_homology[
+  annotations$GS3_percent_homology == 1000]<- NA
+annotations$GS4_percent_homology[
+  annotations$GS4_percent_homology == 1000]<- NA
+
+# Check for presence of output folder, generate if it doesn't exist
+output.path <- "./Data"
+
+species <- switch(x,
+                  `ststerprjeb528` = 'Ss',
+                  `strattprjeb125` = 'Sr',
+                  `stpapiprjeb525` = 'Sp',
+                  `stveneprjeb530` = "Sv")
+
+app.path <-"../Data"
+output.name <- paste0(species, '_geneAnnotations')
+
+save(annotations,
+     file = file.path(output.path,
+                      species,
+                      output.name))
+
+# Save in Shiny app Data folder
+save(annotations,
+     file = file.path(app.path,
+                      output.name))
+}
+
+```

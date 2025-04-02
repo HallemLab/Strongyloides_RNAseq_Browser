@@ -1,0 +1,422 @@
+## GW: Assemble the Volcano Plot ----
+pull_DGEs_GW <- reactive({
+    req(vals$comparison_GW)
+    req(vals$list.myTopHits.df_GW)
+    req(vals$v.DGEList.filtered.norm)
+    setProgress(0.5)
+    if (isTruthy(input$displayedComparison_GW)){
+        vals$displayedComparison_GW <- match(input$displayedComparison_GW,
+                                             vals$comparison_GW, nomatch = 1)
+    } else {vals$displayedComparison_GW <- 1}
+    
+    if(isTruthy(input$bkgndVolcanoYN_GW)){
+        vals$includeBkgnd <- TRUE
+    } else {vals$includeBkgnd <- FALSE}
+    
+    if(isTruthy(input$scaleVolcanoYN_GW)){
+        vals$scaletogenome <- FALSE
+    } else {vals$scaletogenome <- TRUE}
+  
+    #### Volcano Plots
+    point_labels <- if(nrow(vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]])<
+                       20){guide_legend(override.aes = list(size = 4))} else {FALSE}
+    setProgress(0.6)
+    vplot <- ggplot(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]) +
+        aes(y=BH.adj.P.Val, x=logFC) +
+        scale_y_continuous(trans = trans_reverser('log10')) + { 
+            if (vals$includeBkgnd == TRUE) geom_point(size=2, color="grey",
+                   na.rm = T) } +
+        geom_point(data = vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]], 
+                   mapping = aes(y=(BH.adj.P.Val), 
+                                 x=logFC, 
+                                 color = geneID),
+                   size = 3,
+                   na.rm = T) +
+        geom_hline(yintercept = -log10(input$adj.P.thresh_GW), 
+                   linetype="longdash", 
+                   colour="black", 
+                   size=1) + 
+        geom_vline(xintercept = input$lfc.thresh_GW, 
+                   linetype="longdash", 
+                   colour="#BE684D", 
+                   size=1) +
+        geom_vline(xintercept = -input$lfc.thresh_GW, 
+                   linetype="longdash", 
+                   colour="#2C467A", 
+                   size=1) + {
+                       if (vals$scaletogenome == TRUE) expand_limits(x = c(min(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$logFC), max(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$logFC)), y = c(min(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$BH.adj.P.Val), max(vals$list.myTopHits.df_GW[[vals$displayedComparison_GW]]$BH.adj.P.Val))) } +
+        guides(size = "none",
+               colour = point_labels)+
+        labs(title = paste0('Pairwise Comparison: ',
+                            gsub('-',
+                                 ' vs ',
+                                 vals$comparison_GW[vals$displayedComparison_GW])),
+             subtitle = paste0("black dashed line: p = ",
+                               input$adj.P.thresh_GW, "; colored lines: log-fold change = +/-",  input$lfc.thresh_GW),
+             color = "GeneIDs",
+             y = "BH-adjusted p-value",
+             x = "log2FC") +
+        theme_Publication() +
+        theme(aspect.ratio=1/3)
+    setProgress(0.9)
+    vplot
+    
+})
+
+
+## GW: Volcano Plot, Generate UI  ----
+
+    
+output$volcano_GW <- renderUI({
+    parse_contrasts_GW()
+    req(vals$genelist,vals$comparison_GW)
+    
+    output$volcano_UI_GW <- renderPlot({
+        withProgress({
+        set_linear_model_GW()
+        pull_DGEs_GW()}, message = "Calculating DGE...")
+    })
+    
+    panel(
+        heading = tagList(h5(shiny::icon("fas fa-mountain"),
+                             "Pairwise Differential Gene Expression: Volcano Plot")),
+        status = "primary",
+        
+        tagList(plotOutput('volcano_UI_GW',
+                           hover = hoverOpts("plot_hover", 
+                                             delay = 100, 
+                                             delayType = "debounce")),
+                uiOutput("hover_info"),
+                uiOutput("bkgndVolcanoGW"),
+                uiOutput('scaleVolcanoGW'),
+                uiOutput("downloadVolcanoGW")
+        )
+    )
+})
+
+output$bkgndVolcanoGW <- renderUI({
+    req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
+    checkboxInput("bkgndVolcanoYN_GW",
+                  p("Show the DGE values for the entire genome as grey dots in the plot background."), value = TRUE)
+})
+
+output$scaleVolcanoGW <- renderUI({
+    req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
+    checkboxInput("scaleVolcanoYN_GW",
+                  p("If values for entire genome are not shown, rescale plot axis to values of seached genes only?"), value = FALSE)
+})
+
+## GW: Save Volcano Plot ----
+output$downloadVolcanoGW <- renderUI({
+    req(input$goLifeStage_GW, vals$comparison_GW,vals$genelist)
+    
+    output$downloadVolcano_GW <- downloadHandler(
+        filename = function(){
+            paste('VolcanoPlot_',vals$comparison_GW[vals$displayedComparison_GW], '_',Sys.Date(),'.pdf', sep='')
+        },
+        content = function(file){
+            withProgress({
+                vplot<-pull_DGEs_GW()
+                ggsave(file, 
+                       plot = vplot, 
+                       width = 11, 
+                       height = 8, 
+                       units = "in", 
+                       device = cairo_pdf)
+            },
+            message = "Saving Plot")
+        }
+    )
+    
+    downloadButton("downloadVolcano_GW",
+                   "Download Plot as PDF",
+                   class = "btn-primary")
+    
+})
+
+## GW: Volcano Hover Info ----
+output$hover_info <- renderUI({
+    req(vals$displayedComparison_GW,vals$genelist,vals$comparison_GW)
+    
+    pointer.df <- vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]] %>%
+        dplyr::mutate(log10.adj.P.Val = -log10(BH.adj.P.Val))
+    
+    hover <- input$plot_hover
+    point <- nearPoints(pointer.df, hover, 
+                        xvar = "logFC",
+                        yvar = "log10.adj.P.Val",
+                        threshold = 5, maxpoints = 1, addDist = TRUE)
+    if (nrow(point) == 0) return(NULL)
+    
+    # calculate point position INSIDE the image as percent of total dimensions
+    # from left (horizontal) and from top (vertical)
+    left_pct <- (hover$x - hover$domain$left) / (hover$domain$right - hover$domain$left)
+    top_pct <- (hover$domain$top - hover$y) / (hover$domain$top - hover$domain$bottom)
+    
+    # calculate distance from left and bottom side of the picture in pixels
+    left_px <- hover$range$left + left_pct * (hover$range$right - hover$range$left)
+    top_px <- hover$coords_img$y - top_pct * (hover$range$bottom - hover$range$top)
+    
+    left_px <- (hover$coords_img$x + left_pct)/ hover$img_css_ratio$x 
+    #top_px <- (hover$coords_img$y - top_pct) / hover$imge_css_ratio$y
+    
+    #left_px <- hover$coords_img$x + hover$x
+    #top_px <- hover$coords_img$y + hover$y
+    
+    # create style property fot tooltip
+    # background color is set so tooltip is a bit transparent
+    # z-index is set so we are sure are tooltip will be on top
+    style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ",
+                    #"right:", hover$x + 10, "px; top:", hover$y + 10, "px;")
+                    #"left:", hover$range$left, "px; bottom:", hover$range$bottom , "px;")
+                    "left:", left_px + 50, "px; bottom:", top_px + 5, "px;")
+    
+    # actual tooltip created as wellPanel
+    wellPanel(
+        style = style,
+        p(HTML(paste0("<b> GeneID: </b>", 
+                      point$geneID, 
+                      "<br/>", 
+                      "<b> Log FC: </b>",
+                      round(point$logFC,digits = 2),
+                      "<br/>",
+                      "<b> p-value: </b>",
+                      format(point$BH.adj.P.Val, digits = 3, scientific = TRUE))))
+    )
+})
+
+
+## GW: Data Table of Differentially Expressed Genes from User Subset ----
+assemble_DGEs_GW <- reactive({
+    
+    req(vals$comparison_GW,vals$displayedComparison_GW,vals$genelist)
+    
+    tS<- vals$targetStage_GW[vals$displayedComparison_GW,
+                             ][vals$targetStage_GW[vals$displayedComparison_GW,
+                                                   ]!=""]
+    cS<- vals$contrastStage_GW[vals$displayedComparison_GW,
+                               ][vals$contrastStage_GW[vals$displayedComparison_GW,
+                                                       ]!=""]
+    
+  
+    # Add back on genes that were submitted by the user but don't appear in the list of genes for which there is available data.
+    excluded.genes <- dplyr::anti_join(vals$submitted.genelist, 
+                                       vals$genelist,
+                                       by = "geneID") %>%
+        left_join(vals$annotations, by = "geneID") # Add gene annotations
+    
+    highlighted <- vals$list.highlight.tbl_GW[[vals$displayedComparison_GW]] %>%
+        {suppressMessages(dplyr::full_join(.,excluded.genes))} %>%
+        dplyr::relocate(UniProtKB, Location, Description, InterPro, GO_term,
+                        GS1_homologID, GS1_percent_homology,
+                        GS2_homologID, GS2_percent_homology,
+                        GS3_homologID, GS3_percent_homology,
+                        GS4_homologID, GS4_percent_homology, .after = last_col())  %>%
+        dplyr::mutate(GS1_homologID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", GS1_homologID,"' target = '_blank'>", GS1_homologID,"</a>"))%>%
+        dplyr::mutate(GS2_homologID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", GS2_homologID,"' target = '_blank'>", GS2_homologID,"</a>"))%>%
+        dplyr::mutate(GS3_homologID = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", GS3_homologID,"' target = '_blank'>", GS3_homologID,"</a>"))%>%
+        dplyr::mutate(GS4_homologID = paste0("<a href='https://parasite.wormbase.org/Caenorhabditis_elegans_prjna13758/Gene/Summary?g=", GS4_homologID,"' target = '_blank'>", GS4_homologID,"</a>"))%>%
+        dplyr::mutate(WBPSLink = paste0("<a href='https://parasite.wormbase.org/Multi/Search/Results?species=all;idx=;q=", geneID,"' target = '_blank'>", geneID,"</a>")) %>%
+        dplyr::relocate(ends_with("WBgeneID"), .before = GS1_homologID)
+
+    highlight.datatable <- highlighted %>% 
+        DT::datatable(rownames = FALSE,
+                      escape = FALSE,
+                      caption = htmltools::tags$caption(
+                          style = 'caption-side: top; text-align: left; color: black',
+                          htmltools::tags$b('Differentially Expressed Genes in', 
+                                            htmltools::tags$em(input$selectSpecies_GW), 
+                                            gsub('-',' vs ',vals$comparison_GW[vals$displayedComparison_GW])),
+                          htmltools::tags$br(),
+                          "Threshold: p < ",
+                          input$adj.P.thresh_GW, "; log-fold change > ",
+                          input$lfc.thresh_GW,
+                          htmltools::tags$br(),
+                          'Values = log2 counts per million'),
+                      options = list(autoWidth = TRUE,
+                                     scrollX = TRUE,
+                                     scrollY = '300px',
+                                     scrollCollapse = TRUE,
+                                     searchHighlight = TRUE, 
+                                     pageLength = 10, 
+                                     lengthMenu = c("5",
+                                                    "10",
+                                                    "25",
+                                                    "50",
+                                                    "100"),
+                                     initComplete = htmlwidgets::JS(
+                                         "function(settings, json) {",
+                                         paste0("$(this.api().table().container()).css({'font-size': '", "10pt", "'});"),
+                                         "}"),
+                                     columnDefs = list(
+                                         list(
+                                             targets = (which(names(highlighted) == "Description"):which(names(highlighted) == "InterPro")),
+                                             render = JS(
+                                                 "function(data, type, row, meta) {",
+                                                 "return type === 'display' && data.length > 20 ?",
+                                                 "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
+                                                 "}")
+                                         ),
+                                         list(targets = "_all",
+                                              class="dt-right")
+                                     ),
+                                     rowCallback = JS(c(
+                                         "function(row, data){",
+                                         "  for(var i=0; i<data.length; i++){",
+                                         "    if(data[i] === null){",
+                                         "      $('td:eq('+i+')', row).html('NA')",
+                                         "        .css({'color': 'rgb(151,151,151)', 'font-style': 'italic'});",
+                                         "    }",
+                                         "  }",
+                                         "}"  
+                                     ))
+                                     
+                      )) 
+    
+    highlight.datatable <- highlight.datatable %>%
+        DT::formatRound(columns=c(which(names(highlighted) %in% colnames(vals$v.DGEList.filtered.norm$E))), 
+                        digits=3)
+    
+    
+    highlight.datatable <- highlight.datatable %>%
+        DT::formatRound(columns=c(grep("percent_homology|logFC|LogOdds", names(highlighted))), 
+                        digits=2)
+
+    highlight.datatable <- highlight.datatable %>%
+        DT::formatSignif(columns=c(grep("BH.adj.P.Val", names(highlighted))), 
+                         digits=3)
+    highlight.datatable
+})
+
+output$highlight.df <- renderDT ({
+    req(input$goGW,vals$list.highlight.tbl_GW,vals$genelist)
+    DGE.datatable_GW<-assemble_DGEs_GW()
+    DGE.datatable_GW
+})
+
+##GW: Generate responsive pulldown list for filtering/saving DGE Tables
+output$downloadSelectionMenu_GW <- renderUI({
+    req(input$goGW,vals$list.highlight.tbl_GW,vals$comparison_GW)
+    req(str_detect(names(vals$list.highlight.tbl_GW),paste0(gsub("\\+","\\\\+",vals$comparison_GW) %>%
+                                                                gsub("\\-","\\\\-",.)  ,
+                                                            collapse = "|")))
+    
+    selectInput("download_DGE_Selection_GW",
+                label = h6("Select Contrast(s) to Download"),
+                choices = c('Choose one or more' = ''
+                            ,'Everything' = 'Everything'
+                            ,as.list(vals$comparison_GW)),
+                selected = "Everything",
+                selectize = TRUE,
+                multiple = TRUE)
+})
+
+##GW: Filter DGE Tables Before Saving ----
+filter_DGE_tbl_GW <- reactive({
+    req(input$goLifeStage_GW,vals$displayedComparison_GW,vals$list.highlight.tbl_GW,vals$comparison_GW,input$download_DGE_Selection_GW)
+    req(str_detect(names(vals$list.highlight.tbl_GW),paste0(gsub("\\+","\\\\+",vals$comparison_GW) %>%
+                                                                gsub("\\-","\\\\-",.)  ,
+                                                            collapse = "|")))
+    ## Figure out which datasets to download
+    if (any(str_detect(input$download_DGE_Selection_GW, "Everything"))){
+        download_DT <- vals$list.highlight.tbl_GW
+    } else {
+        subsetContrasts <- str_detect(names(vals$list.highlight.tbl_GW),paste0(input$download_DGE_Selection_GW, collapse = "|"))
+        download_DT<- vals$list.highlight.tbl_GW[subsetContrasts]
+    }
+    
+    if (input$download_DGEdt_across_GW == TRUE) {
+        subsetIDs <-lapply(names(download_DT), function(y){
+            dplyr::filter(download_DT[[y]],str_detect(DGE_Desc,paste0(input$download_DGEdt_direction_GW, collapse = "|")))
+        }) %>%
+            purrr::reduce(inner_join, by = c("geneID", "DGE_Desc")) %>%
+            dplyr::select(geneID)
+        
+        filtered.list.highlight.tbl_GW <- lapply(names(download_DT), function(y){
+            dplyr::filter(download_DT[[y]], geneID %in% subsetIDs$geneID)%>%
+                dplyr::arrange(desc(logFC))
+        })
+        names(filtered.list.highlight.tbl_GW) <- names(download_DT)
+    } else {
+        filtered.list.highlight.tbl_GW <-lapply(names(download_DT), function(y){
+            dplyr::filter(download_DT[[y]],str_detect(DGE_Desc,paste0(input$download_DGEdt_direction_GW, collapse = "|"))) %>%
+                dplyr::arrange(desc(logFC))
+        })
+        names(filtered.list.highlight.tbl_GW)<- names(download_DT)
+    }
+    
+    # Pass only a specific proportion of genes. Remember, the datatable is grouped by the DGE_Desc value, and ordered by descending logFC value. 
+    filtered.list.highlight.tbl_GW<-lapply(names(filtered.list.highlight.tbl_GW), function(y){
+        
+        filtered.list.highlight.tbl_GW[[y]] %>%
+            dplyr::group_map(~ {
+                if (str_detect(.y, "Up")) {
+                    slice_max(.x, order_by = logFC, prop = as.numeric(input$percentDGE_GW)/100)
+                } else if (str_detect(.y, "NotSig")) {
+                    slice_max(.x, order_by = logFC, prop = as.numeric(input$percentDGE_GW)/100)
+                } else if (str_detect(.y, "Down")) {
+                    slice_min(.x, order_by = logFC, prop = as.numeric(input$percentDGE_GW)/100)
+                }
+            }, .keep = TRUE) %>%
+            bind_rows() %>%
+            dplyr::arrange(desc(logFC))
+    })
+    names(filtered.list.highlight.tbl_GW)<- names(download_DT)
+    filtered.list.highlight.tbl_GW
+})
+
+## GW: Save Excel Tables with DGE Tables ----
+output$downloadbuttonGW <- renderUI({
+    req(input$goLifeStage_GW,vals$comparison_GW,vals$genelist)
+    
+    filtered.tbl_GW <- filter_DGE_tbl_GW()
+    
+    if (input$download_missing_genes_GW == T) {
+    # Add back on genes that were submitted by the user but don't appear in the list of genes for which there is available data.
+    excluded.genes <- dplyr::anti_join(vals$submitted.genelist, 
+                                       vals$genelist,
+                                       by = "geneID") %>%
+        left_join(vals$annotations, by = "geneID") # Add gene annotations
+    
+    downloadablel.tbl_GW <-lapply(filtered.tbl_GW, function (x) {
+        suppressMessages(dplyr::full_join(x,excluded.genes))
+    })
+    } else {downloadablel.tbl_GW <- filtered.tbl_GW}
+   
+    expressionnotes <- "Columns labeled with <life stage - sample ID> report log2 counts per million (CPM) expression. Columns labeled avg_<life stage> are median log2CPM with IQR. The column labeled logFC reports log2 fold change."
+    ### Generate some text that describes the analysis conditions
+    ### 1. If p-values are adjusted for multiple pairwise comparisons, which comparisons are included in the adjustment parameters? This should be the list of selected contrasts
+    if (vals$multipleCorrection_GW == TRUE){
+        multiplecorrection <- paste0(vals$comparison_GW, collapse = "; ")
+        multiplecorrection <- paste0("P-values corrected across the following multiple pairwise comparisons: ", multiplecorrection)
+    } else {
+        multiplecorrection <- "P-values *not* corrected across multiple pairwise comparisons"
+    }
+    ### 2. If downloading results are being filtered to show only genes that display consistent differential expression across all comparisons targeted for download, list the pairwise comparisons being used.
+    if (input$download_DGEdt_across_GW == TRUE){
+        filteredacross <- paste0(names(filtered.tbl_GW), collapse = "; ")
+        filteredacross <- paste0("Lists only include genes with matching differential expression descriptions across the following pairwise comparisons: ", filteredacross)
+    } else filteredacross <- ""
+        
+    ### 3. Specify which types of differential expression pattern
+    DGEpattern <- paste0(input$download_DGEdt_direction_GW, collapse = "; ")
+    DGEpattern <- paste0("Lists include genes that are differentially regulated in the following directions (relative to the target life stage): ", DGEpattern)
+    
+    ### 4. Specify the proportion of genes for each DGE Type that are being saved (e.g. top 10% of upregulated, and top10% of downregulated genes)
+    proportionexport <- paste0("Percentage of genes for each differential expression pattern: ", input$percentDGE_GW)
+    
+    output$generate_excel_report_GW <- generate_excel_report(names(downloadablel.tbl_GW), 
+                                                             downloadablel.tbl_GW,
+                                                             name = paste(input$selectSpecies_GW,
+                                                                          "RNA-seq Differential Gene Expression"),
+                                                             filename_prefix = 'DGETable_',
+                                                             expressionnotes = expressionnotes,
+                                                             multiplecorrection = multiplecorrection,
+                                                             filteredacross = filteredacross,
+                                                             DGEpattern = DGEpattern,
+                                                             proportionexport = proportionexport)
+    
+    downloadButton("generate_excel_report_GW",
+                   "Download DGE Tables as Excel",
+                   class = "btn-primary")
+})

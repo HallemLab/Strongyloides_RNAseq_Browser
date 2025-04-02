@@ -9,7 +9,7 @@ observeEvent({input$resetGW
 
 ## GW: Generate Comparison Selection Boxes ----
 output$pairwiseSelector_GW<- renderUI({
-    req(vals$v.DEGList.filtered.norm)
+    req(vals$v.DGEList.filtered.norm)
     
     list(
         panel(
@@ -50,6 +50,19 @@ output$pairwiseSelector_GW<- renderUI({
             h6("Correct for multiple comparisons?"),
             checkboxInput("multipleContrastsYN_GW",
                           p("Yes, correct p-values for multiple pairwise comparisons")),
+            
+            tags$hr(style="border-color: #2C3E50;"),
+            
+            h5('Select Thresholds', class = 'text-danger'),
+            ### User inputs for p-value and LogFC cutoffs
+            # Numeric Input for LogFC
+            numericInput("lfc.thresh_GW",
+                         "LogFC Threshold",
+                         value = 1),
+            # Numeric Input for P-value 
+            numericInput("adj.P.thresh_GW",
+                         "P-value Threshold",
+                         value = 0.05),
             
             tags$hr(style="border-color: #2C3E50;"),
             
@@ -135,7 +148,7 @@ parse_contrasts_GW <- eventReactive(input$goLifeStage_GW,{
         } else vals$multipleCorrection_GW <- F
     } else if (str_detect(input$selectContrast_GW[[1]], 'everythingElse')){
         targetStage <- rbind(input$selectTarget_GW)
-        contrastStage <- setdiff(levels(vals$v.DEGList.filtered.norm$targets$group),targetStage) %>%
+        contrastStage <- setdiff(levels(vals$v.DGEList.filtered.norm$targets$group),targetStage) %>%
             cbind()
         targetStage <- rep_len(targetStage,length(contrastStage)) %>%
             cbind()
@@ -153,7 +166,7 @@ parse_contrasts_GW <- eventReactive(input$goLifeStage_GW,{
         } else vals$multipleCorrection_GW <- F
     } else if (str_detect(input$selectContrast_GW[[1]], 'remainingGroup')){
         targetStage <- rbind(input$selectTarget_GW)
-        contrastStage <- setdiff(levels(vals$v.DEGList.filtered.norm$targets$group),targetStage) %>%
+        contrastStage <- setdiff(levels(vals$v.DGEList.filtered.norm$targets$group),targetStage) %>%
             rbind()
         comparison <- paste(paste0(targetStage, 
                          collapse = "+") %>%
@@ -206,13 +219,13 @@ parse_contrasts_GW <- eventReactive(input$goLifeStage_GW,{
     # 2. Do contrasts include recognized life stages (corrects for spelling mistakes); compare relative to abbreviated names in lifestage_legend
     ## Do all target elements match a life stage in this dataset? 
     error.targets.validNames <- targetStage[targetStage != ""] %in% 
-        levels(vals$v.DEGList.filtered.norm$targets$group) 
+        levels(vals$v.DGEList.filtered.norm$targets$group) 
     shiny::validate(shiny::need(all(error.targets.validNames), 
                                 message = "At least one target name doesn't match available life stages. Please check inputs for spelling mistakes or incorrect capitalization.")) 
     
     ## Do all contrast elements match a life stage in this dataset?
     error.contrast.validNames <- contrastStage[contrastStage != ""] %in% 
-        levels(vals$v.DEGList.filtered.norm$targets$group) 
+        levels(vals$v.DGEList.filtered.norm$targets$group) 
     shiny::validate(shiny::need(all(error.contrast.validNames), 
                                 message = "At least one contrast name doesn't match available life stages. Please check inputs for spelling mistakes or incorrect capitalization.")) 
     

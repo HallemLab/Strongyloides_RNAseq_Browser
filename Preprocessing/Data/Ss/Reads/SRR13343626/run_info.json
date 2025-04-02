@@ -1,0 +1,13 @@
+{
+	"n_targets": 13149,
+	"n_bootstraps": 0,
+	"n_processed": 45179114,
+	"n_pseudoaligned": 42873437,
+	"n_unique": 42592301,
+	"p_pseudoaligned": 94.9,
+	"p_unique": 94.3,
+	"kallisto_version": "0.46.2",
+	"index_version": 10,
+	"start_time": "Fri Jul  8 17:16:53 2022",
+	"call": "kallisto quant -i strongyloides_stercoralis.PRJEB528.WBPS17.mRNA_transcripts.index -o SRR13343626 -t 14 SRR13343626_1.fastq.gz SRR13343626_2.fastq.gz"
+}

@@ -2,10 +2,10 @@
 # Use Empirical Bayes Statistics to rank genes in order of evidence for differential expression
 # Adjust for Multiple Comparisons if necessary
 # This function is called by set_linear_model_gw.R and set_linear_model_ls.R
-limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrection, genelist, vals, fit, v.DEGList.filtered.norm, adj.P.thresh, diffGenes.df){
+limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrection, genelist, vals, fit, v.DGEList.filtered.norm, adj.P.thresh, lfc.thresh, diffGenes.df){
 
     contrast.matrix <- makeContrasts(contrasts = comparison,
-                                     levels = v.DEGList.filtered.norm$design)
+                                     levels = v.DGEList.filtered.norm$design)
     fits <- contrasts.fit(fit, contrast.matrix)
     ebFit <- limma::eBayes(fits)
     setProgress(0.05)
@@ -15,12 +15,14 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
         results <- decideTests(ebFit, 
                                method="global", 
                                adjust.method="BH", 
-                               p.value = adj.P.thresh)
+                               p.value = adj.P.thresh,
+                               lfc = lfc.thresh)
     }else{
         results <- decideTests(ebFit, 
                                method="separate", 
                                adjust.method="BH", 
-                               p.value = adj.P.thresh)    
+                               p.value = adj.P.thresh,
+                               lfc = lfc.thresh)    
     }
     setProgress(0.1)
     recode01<- function(x){
@@ -36,7 +38,7 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
         dplyr::mutate(across(where(is.double), recode01))
     
     vals$list.myTopHits.df <- sapply(comparison, function(y){
-        calc_DEG_tbl(ebFit, y)}, 
+        calc_DGE_tbl(ebFit, y)}, 
         simplify = FALSE, 
         USE.NAMES = TRUE)
     setProgress(0.15)
@@ -47,7 +49,7 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
                 dplyr::filter(geneID %in% genelist[[1]]) %>%
                 dplyr::select(geneID, 
                               logFC, 
-                              BH.adj.P.Val:Ce_percent_homology)},
+                              BH.adj.P.Val:GS4_percent_homology)},
             simplify = FALSE, 
             USE.NAMES = TRUE)
     } else {
@@ -55,7 +57,7 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
             vals$list.myTopHits.df[[y]] %>%
                 dplyr::select(geneID, 
                               logFC, 
-                              BH.adj.P.Val:Ce_percent_homology)},
+                              BH.adj.P.Val:GS4_percent_homology)},
             simplify = FALSE, 
             USE.NAMES = TRUE)
     }
@@ -106,26 +108,25 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
             left_join(groupAvgs, by = "geneID") %>%
             left_join(list.highlight.df[[y]],., by = "geneID") %>%
             left_join(dplyr::select(diffDesc,geneID,comparison[y]), by = "geneID") %>%
-            dplyr::rename(DEG_Desc=comparison[y]) %>%
-            dplyr::relocate(DEG_Desc) %>%
-            dplyr::relocate(logFC:Ce_percent_homology, .after = last_col())
+            dplyr::rename(DGE_Desc=comparison[y]) %>%
+            dplyr::relocate(DGE_Desc) %>%
+            dplyr::relocate(logFC:GS4_percent_homology, .after = last_col())
         
     },
     simplify = FALSE)
     
     setProgress(0.3)
-    
     comparison <- gsub("/[0-9]*","", comparison) %>%
         gsub("\\(|\\)","",.)
     names(vals$list.highlight.tbl) <- comparison
     
     vals$list.highlight.tbl <- sapply(comparison, function(y){
         vals$list.highlight.tbl[[y]] %>%
-            dplyr::mutate(DEG_Desc = case_when(DEG_Desc == "Up" ~ paste0("Up in ", str_split(y,'-',simplify = T)[1,1]),
-                                               DEG_Desc == "Down" ~ paste0("Down in ", str_split(y,'-',simplify = T)[1,1]),
-                                               DEG_Desc == "NotSig" ~ "NotSig")) %>%
-            #dplyr::mutate(DEG_Desc = as.factor(DEG_Desc)) %>%
-            dplyr::group_by(DEG_Desc)
+            dplyr::mutate(DGE_Desc = case_when(DGE_Desc == "Up" ~ paste0("Up in ", str_split(y,'-',simplify = T)[1,1]),
+                                               DGE_Desc == "Down" ~ paste0("Down in ", str_split(y,'-',simplify = T)[1,1]),
+                                               DGE_Desc == "NotSig" ~ "NotSig")) %>%
+            #dplyr::mutate(DGE_Desc = as.factor(DGE_Desc)) %>%
+            dplyr::group_by(DGE_Desc)
     },
     simplify = FALSE, 
     USE.NAMES = TRUE)

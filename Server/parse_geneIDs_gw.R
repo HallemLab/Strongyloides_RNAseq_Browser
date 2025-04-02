@@ -35,7 +35,7 @@ parse_ids <- eventReactive(input$goGW,{
     vals$genelist <- NULL
     vals$HeatmapRowOrder <- NULL
     validate(
-        need(isTruthy(vals$v.DEGList.filtered.norm), 
+        need(isTruthy(vals$v.DGEList.filtered.norm), 
              "Please re-select a species for analysis")
     )
     
@@ -47,7 +47,7 @@ parse_ids <- eventReactive(input$goGW,{
         if (isTruthy(input$idtext)){
             terms <- input$idtext %>%
                 gsub("\\n",",",.) %>% #replace any new lines with commas
-                trimWhiteSpace %>% #remove leading and trailing white psace from string
+                trimWhiteSpace %>% #remove leading and trailing white space from string
                 str_split(pattern = ",|;") %>%
                 unlist()
         } else if (isTruthy(input$loadfile)){
@@ -80,17 +80,28 @@ parse_ids <- eventReactive(input$goGW,{
         } else {
             inc <- 0.1/nrow(terms)
             # Search for gene IDs
-            terms.cleaned <- gsub("\\.[0-9]$","",terms) #strip any transcript values from the inputed list
+            terms.cleaned <- gsub("\\.[0-9]$","",terms) #strip any transcript values from the inputted list
             
             geneindex.geneID<-sapply(terms.cleaned, function(y) {
                 incProgress(amount = inc)
-                grepl(gsub("^\\s+|\\s+$", "", y), #remove any number of whitespace from start or end
+                grepl(gsub("^\\s+|\\s+$", "", y), #remove any number of white space from start or end
                       vals$annotations$geneID,
                       ignore.case = TRUE)
             }) %>%
                 rowSums() %>%
                 as.logical()
             
+            #Search XLOC IDs if searching S. stercoralis 
+            if (input$selectSpecies_GW == "S. stercoralis") {
+                geneindex.XLOC<-sapply(terms, function(y){
+                    incProgress(amount = inc)
+                    grepl(gsub("^\\s+|\\s+$", "", y), #remove any number of whitespace from start or end
+                          vals$annotations$XLOC_IDs,
+                          ignore.case = TRUE)
+                })  %>%
+                    rowSums() %>%
+                    as.logical()
+            }
             
             # Search WormBase Parasite Gene Description Terms
             geneindex.description<-sapply(terms, function(y) {
@@ -123,31 +134,7 @@ parse_ids <- eventReactive(input$goGW,{
                 gsub("^\\s+|\\s+$", "", y) %>%
                 paste0("\\<",.,"\\>") %>%
                     grepl(., 
-                          vals$annotations$Ce_geneID,
-                          ignore.case = TRUE)
-            }) %>%
-                rowSums() %>%
-                as.logical()
-           
-            # Search In-group homolog IDs
-            geneindex.InGroup<-sapply(terms, function(y) {
-                incProgress(amount = inc)
-                gsub("^\\s+|\\s+$", "", y) %>%
-                    paste0("\\<",.,"\\>") %>%
-                    grepl(., 
-                          vals$annotations$In.subclade_geneID,
-                          ignore.case = TRUE)
-            }) %>%
-                rowSums() %>%
-                as.logical()
-            
-            # Search Out-group homolog IDs
-            geneindex.OutGroup<-sapply(terms, function(y) {
-                incProgress(amount = inc)
-                gsub("^\\s+|\\s+$", "", y) %>%
-                    paste0("\\<",.,"\\>") %>%
-                    grepl(., 
-                          vals$annotations$Out.subclade_geneID,
+                          vals$annotations$GS4_homologID,
                           ignore.case = TRUE)
             }) %>%
                 rowSums() %>%
@@ -165,7 +152,7 @@ parse_ids <- eventReactive(input$goGW,{
                 rowSums() %>%
                 as.logical()
             
-            geneindex <- geneindex.geneID | geneindex.description | geneindex.ensembl | geneindex.Cehomologs | geneindex.InGroup |geneindex.OutGroup | geneindex.InterPro 
+            geneindex <- geneindex.geneID | geneindex.description | geneindex.ensembl | geneindex.Cehomologs | geneindex.InterPro 
             genelist <- dplyr::filter(genelist,geneindex) 
         }
        
@@ -200,7 +187,6 @@ parse_ids <- eventReactive(input$goGW,{
         vals$genelist <- genelist
         vals$genelist.Log2CPM <- vals$Log2CPM %>%
             dplyr::filter(geneID %in% genelist$geneID)
-        
         },message = "Parsing gene IDs...")
     })
 })

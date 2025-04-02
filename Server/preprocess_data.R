@@ -13,5 +13,5 @@ lifestage_legend <- suppressMessages(read_tsv("./Data/Life_stage_legend.txt",
          na = c("", "NA", "na")))
 
 ## Set Expression threshold values for plotting and saving DEGs ----
-adj.P.thresh <- 0.05
-lfc.thresh <- 1
+#adj.P.thresh <- 0.05
+#lfc.thresh <- 1
