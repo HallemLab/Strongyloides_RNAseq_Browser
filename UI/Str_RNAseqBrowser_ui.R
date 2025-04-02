@@ -1,7 +1,7 @@
 
 
 # Header ----
-navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser"),
+navbarPage(title = h3(em("Strongyloides"), "RNA-seq Browser - Development Version"),
            windowTitle = "Str-RNA-seq Browser",
            theme = shinytheme("flatly"), 
            collapsible = F,
