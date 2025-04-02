@@ -2,6 +2,7 @@
 This app was created by [Astra S. Bryant, PhD](https://scholar.google.com/citations?user=uSGqqakAAAAJ&hl=en) with assistance from Stephanie DeMarco, PhD for the [Hallem Lab](http://www.hallemlab.com/) at UCLA.  
 
 ### Selected Release Notes
+- **v3.0.0** - April 2, 2025: Some big changes under the hood to streamline things, including adding code to preprocess data into the app GitHub repository. Also added ability for users to select desired threshold levels of LogFC and P-value.
 - **v2.3.0** - Nov 20, 2023: Bug fixes.
 - **v2.2.0** - Nov 14, 2023: Added hyperlinks to WBPS for gene names. Thanks to Damia Gonzalez Akimori for the suggestion.
 - **v2.0.5** - July 11, 2022: Updated *S. stercoralis* Kallisto alignments to [WBPS17 reference transcriptome](https://wbparasite.wordpress.com/2016/12/05/announcing-wormbase-parasite-release-8/).
