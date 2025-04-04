@@ -97,13 +97,13 @@ generateHeatmapTable <- reactive({
     setProgress(0.2)
     clustColumns <- hclust(as.dist(1-cor(subset.diffGenes, method="spearman")), method="complete")
     
-    colnames(subset.diffGenes) <- paste0(vals$v.DGEList.filtered.norm$targets$group,
-                                         "...",
-                                         substr(vals$v.DGEList.filtered.norm$targets$samples, 
-                                                nchar(
-                                                  as.character(vals$v.DGEList.filtered.norm$targets$samples[1]))-2, nchar(
-                                                    as.character(vals$v.DGEList.filtered.norm$targets$samples[1]))+2)
-    )
+    # colnames(subset.diffGenes) <- paste0(vals$v.DGEList.filtered.norm$targets$group,
+    #                                      "...",
+    #                                      substr(vals$v.DGEList.filtered.norm$targets$samples, 
+    #                                             nchar(
+    #                                               as.character(vals$v.DGEList.filtered.norm$targets$samples[1]))-2, nchar(
+    #                                                 as.character(vals$v.DGEList.filtered.norm$targets$samples[1]))+2)
+    # )
         setProgress(0.4)
     
     clustRows <- hclust(as.dist(1-cor(t(subset.diffGenes), 

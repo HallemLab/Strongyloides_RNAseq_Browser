@@ -83,14 +83,13 @@ limma_ranking <- function(comparison, targetStage, contrastStage, multipleCorrec
             dplyr::select(geneID, starts_with(paste0(tS,"-")), 
                           starts_with(paste0(cS,"-"))) %>%
             pivot_longer(cols = -geneID, 
-                         names_to = c("group","sample"),
-                         values_to = "CPM",
-                         names_sep = "-") %>%
+                         names_to = c("group"),
+                         values_to = "CPM") %>%
+            dplyr::mutate(group = str_replace(group, "-.*", "")) %>%
             dplyr::mutate(contrastID = if_else(group %in% tS,
                                                "target", 
                                                "contrast")) %>%
             group_by(geneID, contrastID) %>%
-            dplyr::select(-sample) %>%
             dplyr::summarise(avg = round(median(CPM),2), 
                              low_hinge = round(fivenum(CPM)[2],2), 
                              up_hinge = round(fivenum(CPM)[4],2), 
