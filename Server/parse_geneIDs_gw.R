@@ -153,6 +153,9 @@ parse_ids <- eventReactive(input$goGW,{
                 as.logical()
             
             geneindex <- geneindex.geneID | geneindex.description | geneindex.ensembl | geneindex.Cehomologs | geneindex.InterPro 
+            if (input$selectSpecies_GW == "S. stercoralis") {
+                geneindex <- geneindex | geneindex.XLOC
+            }
             genelist <- dplyr::filter(genelist,geneindex) 
         }
        
